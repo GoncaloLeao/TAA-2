@@ -1,0 +1,27 @@
+digraph {
+ { rank=same; 4; }
+4 [shape=circle];
+null0 [shape=point];
+4->null0
+4->2
+ { rank=same; 2; }
+2 [shape=circle];
+2->6
+2->10
+ { rank=same; 6; 10; }
+6 [shape=circle];
+6->5
+null1 [shape=point];
+6->null1
+10 [shape=circle];
+null2 [shape=point];
+10->null2
+null3 [shape=point];
+10->null3
+ { rank=same; 5; }
+5 [shape=circle];
+null4 [shape=point];
+5->null4
+null5 [shape=point];
+5->null5
+}
