@@ -139,7 +139,7 @@ public class BST<K extends Comparable<K>, V> {
             }
     		//The current node has two children
     		else {
-    			Node smallestRightNode = (AVLTree<K, V>.Node) getMin();
+    			Node smallestRightNode = (AVLTree2<K, V>.Node) getMin();
     			node.setKey(smallestRightNode.getKey());
     			node.setValue(smallestRightNode.getValue());
     			node.setRight(delete(node.getRight(), smallestRightNode.getKey()));
