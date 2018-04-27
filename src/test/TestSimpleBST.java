@@ -9,7 +9,7 @@ import org.junit.Test;
 public class TestSimpleBST {
 
 	@Test
-	public void test1() {
+	public void testRandom() {
 		SimpleBST<Integer> bst = new SimpleBST<Integer>();
 		
 		assertEquals("()", bst.toString());
@@ -62,6 +62,32 @@ public class TestSimpleBST {
 		assertEquals(null, bst.find(7));
 		assertEquals(new Integer(4), bst.getMin());
 		assertEquals(new Integer(10), bst.getMax());
+		
+		System.out.println(bst.toString());
+		
+		bst.dump("test.txt");
+	}
+	
+	@Test
+	public void testAscending() {
+		SimpleBST<Integer> bst = new SimpleBST<Integer>();
+		
+		bst.insert(1);
+		assertEquals("(1,(),())", bst.toString());
+		
+		bst.insert(2);
+		assertEquals("(1,(),(2,(),()))", bst.toString());
+		
+		bst.insert(3);
+		assertEquals("(1,(),(2,(),(3,(),())))", bst.toString());
+		
+		bst.insert(4);
+		assertEquals("(1,(),(2,(),(3,(),(4,(),()))))", bst.toString());
+		
+		bst.insert(6);
+		assertEquals("(1,(),(2,(),(3,(),(4,(),(6,(),())))))", bst.toString());
+		assertEquals(new Integer(1), bst.getMin());
+		assertEquals(new Integer(6), bst.getMax());
 		
 		System.out.println(bst.toString());
 		
