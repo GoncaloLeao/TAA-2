@@ -38,6 +38,8 @@ public class TestBST {
 		bst.remove(7);
 		bst.remove(2);
 		
+		bst.print(System.out);
+		
 		bst.dump("test.txt");
 	}
 

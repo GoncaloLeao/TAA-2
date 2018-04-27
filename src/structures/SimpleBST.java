@@ -2,8 +2,11 @@ package structures;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+
+import structures.BST.Node;
 
 public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 
@@ -133,6 +136,26 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
     	else if(node.getRight() == null) return node;
     	//Right child is not empty
     	else return getMax(node.getRight());
+    }
+	
+	@Override
+	public void print(PrintStream p) { 
+    	print(root, p);
+    }
+    
+    // print the values in this BST in pre-order (to p)
+    protected void print(Node node, PrintStream p) {
+    	p.append("(");
+    	//Print the root
+    	if(node != null) {
+    		p.append(node.getKey() + ",");
+    		//Print the left subtree
+        	print(node.getLeft(), p);
+        	p.append(",");
+            //Print the right subtree
+            print(node.getRight(), p);
+    	}
+        p.append(")");
     }
 	
 	@SuppressWarnings("unchecked")
