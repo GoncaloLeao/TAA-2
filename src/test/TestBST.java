@@ -1,10 +1,6 @@
 package test;
 
-import structures.AVLTree;
-import structures.BST;
-import static org.junit.Assert.*;
-
-import java.io.PrintStream;
+import structures.SimpleBST;
 
 import org.junit.Test;
 
@@ -13,7 +9,7 @@ public class TestBST {
 	
 	@Test
 	public void test() {
-		BST<Integer,Integer> bst = new BST<Integer,Integer>();
+		SimpleBST<Integer> bst = new SimpleBST<Integer>();
 		/*bst.insert(1, 2);
 		bst.insert(1, 2);
 		bst.find(1);
@@ -33,18 +29,14 @@ public class TestBST {
 		bst.root = bst.rotateRight(bst.root);
 		*/
 		
-		bst.insert(4, null);
-		bst.insert(7, null);
-		bst.insert(10, null);
-		bst.insert(6, null);
-		bst.insert(2, null);
-		bst.insert(5, null);
-		bst.delete(7);
-		bst.delete(2);
-		
-		PrintStream p = new PrintStream(System.out);
-		bst.print(p);
-		p.println();
+		bst.insert(4);
+		bst.insert(7);
+		bst.insert(10);
+		bst.insert(6);
+		bst.insert(2);
+		bst.insert(5);
+		bst.remove(7);
+		bst.remove(2);
 		
 		bst.dump("test.txt");
 	}

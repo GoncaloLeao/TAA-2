@@ -6,6 +6,5 @@ public interface DynamicSet<K extends Comparable<K>> {
 	public void remove(K key);
 	public K getMin();
 	public K getMax();
-	public int freqCount(K key);
 	public void dump(String filename);
 }
