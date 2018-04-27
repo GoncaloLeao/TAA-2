@@ -31,7 +31,9 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	@Override
 	public K find(K key) {
-		return find(root, key).getKey();
+		Node node = find(root, key);
+		if(node != null) return node.getKey();
+		else return null;
 	}
 	
 	protected Node find(Node node, K key) {
@@ -109,7 +111,9 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public K getMin() {
-		return getMin(root).getKey();
+		Node node = getMin(root);
+		if(node != null) return node.getKey();
+		else return null;
 	}
 	
 	protected final Node getMin(Node node) {
@@ -123,7 +127,9 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public K getMax() {
-		return getMax(root).getKey();
+		Node node = getMax(root);
+		if(node != null) return node.getKey();
+		else return null;
 	}
 	
 	protected final Node getMax(Node node) {
