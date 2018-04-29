@@ -48,7 +48,7 @@ public class BST<K extends Comparable<K>, V> {
     	}
     }
 	
-	public Node root;
+	protected Node root;
     
     public BST() { this.root = null; }
 	

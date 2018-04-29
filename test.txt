@@ -1,22 +1,2 @@
 digraph {
- { rank=same; 4; }
-4 [shape=circle];
-null0 [shape=point];
-4->null0
-4->6
- { rank=same; 6; }
-6 [shape=circle];
-6->5
-6->10
- { rank=same; 5; 10; }
-5 [shape=circle];
-null1 [shape=point];
-5->null1
-null2 [shape=point];
-5->null2
-10 [shape=circle];
-null3 [shape=point];
-10->null3
-null4 [shape=point];
-10->null4
 }

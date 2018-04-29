@@ -3,43 +3,47 @@ package structures;
 public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	public class Node {
-    	protected K key;
-    	protected Node left;
-    	protected Node right;
-    	protected boolean heightEqual;
-    	protected boolean heightPlusLeft;
+    	private K key;
+    	private Node left;
+    	private Node right;
+    	private int height;
     	 
     	protected Node(K key) {
     		this.key = key;
-    		this.heightEqual = true;
+    		this.height = 1;
     	}
     	
-    	protected K getKey() { return key; }
-    	protected Node getLeft() { return left; }
-    	protected Node getRight() { return right; }
-    	protected int getBalance() {
-    		if(heightEqual) return 0;
-    		else if (heightPlusLeft) return 1;
-    		else return -1;
-    	}
-    	
-    	protected void setKey(K key) { this.key = key; }
-    	protected void setLeft(Node left) { this.left = left; }
-    	public void setRight(Node right) { this.right = right; }
-    	public void setBalance(int balance) {
-    		if(balance == 0) heightEqual = true;
-    		else if(balance == 1) {
-    			heightEqual = false;
-    			heightPlusLeft = true;
+    	public K getKey() { return key; }
+    	public Node getLeft() { return left; }
+    	public Node getRight() { return right; }
+    	public int getBalance() { 
+    		if(left != null) {
+    			if(right != null) return left.height - right.height;
+    			else return left.height;
     		}
-    		else if(balance == -1) {
-    			heightEqual = false;
-    			heightPlusLeft = false;
+    		else {
+    			if(right != null) return -right.height;
+    			else return 0;
+    		}
+    	}
+    	public int getHeight() { return height; }
+    	
+    	public void setKey(K key) { this.key = key; }
+    	public void setLeft(Node left) { this.left = left; }
+    	public void setRight(Node right) { this.right = right; }
+    	public void updateHeight() {
+    		if(left != null) {
+    			if(right != null) this.height = 1 + Math.max(left.getHeight(), right.getHeight());
+    			else this.height = 1 + left.getHeight();
+    		}
+    		else {
+    			if(right != null) this.height = 1 + right.getHeight();
+    			else this.height = 1;
     		}
     	}
     }
 	
-	public Node root;
+	private Node root;
     
 	/**
 	 * The implementation is the same as SimpleBST.
@@ -71,104 +75,31 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
     	//Node is empty
     	if (node == null) return new Node(key);
     	//Add to the left subtree
-    	else if (key.compareTo(node.getKey()) < 0) {
-    		node.setLeft(insert(node.getLeft(), key));
-    		
-    		// Check if the tree needs to be rebalanced
-    		if(node.getBalance() == 1) {
-    			Node y = node.getLeft();
-    			int balanceY = y.getBalance();
-    			//Left left case
-    			if(key.compareTo(y.getKey()) < 0) {
-    				node.setBalance(Math.abs(balanceY - 1));
-    				y.setBalance(balanceY - 1);
-    				
-    				return rotateRight(node);
-    			}
-    			//Left right case
-    			else if(key.compareTo(y.getKey()) > 0) {
-    				Node z = y.getRight();
-        			int balanceZ = z.getBalance();
-    				
-    				z.setBalance(0);
-    				// Before the rotations, node has height h+3 and y has height h+2.
-    				if(balanceZ == 0) {
-    					//Both children of z have height h.
-    					y.setBalance(0);
-    					node.setBalance(0);
-    				}
-    				else if(balanceZ == 1) {
-    					//Left child of z has height h, right child has height h-1.
-    					y.setBalance(0);
-    					node.setBalance(-1);
-    				}
-    				else if(balanceZ == -1) {
-    					//Left child of z has height h-1, right child has height h.
-    					y.setBalance(1);
-    					node.setBalance(0);
-    				}
-    				
-    				node.setLeft(rotateLeft(y));
-    	            return rotateRight(node);
-    			}
-    			else return node;
-    		}
-    		//Node is balanced
-    		else {
-    			node.setBalance(node.getBalance() + 1);
-    			return node;
-    		}
-    	}
+    	else if (key.compareTo(node.getKey()) < 0) node.setLeft(insert(node.getLeft(), key));
     	//Add to the right subtree
-    	else if (key.compareTo(node.getKey()) > 0) {
-    		node.setRight(insert(node.getRight(), key));
-    		
-    		// Check if the tree needs to be rebalanced
-    		if(node.getBalance() == -1) {
-    			Node y = node.getRight();
-    			int balanceY = y.getBalance();
-    			//Right Right case
-    			if(key.compareTo(y.getKey()) > 0) {
-    				node.setBalance(Math.abs(balanceY + 1));
-    				y.setBalance(balanceY + 1);
-    				
-    				return rotateLeft(node);
-    			}
-    			//Right left case
-    			else if(key.compareTo(y.getKey()) < 0) {
-    				Node z = y.getLeft();
-        			int balanceZ = z.getBalance();
-    				
-    				z.setBalance(0);
-    				// Before the rotations, node has height h+3 and y has height h+2.
-    				if(balanceZ == 0) {
-    					//Both children of z have height h.
-    					y.setBalance(0);
-    					node.setBalance(0);
-    				}
-    				else if(balanceZ == 1) {
-    					//Left child of z has height h, right child has height h-1.
-    					node.setBalance(0);
-    					y.setBalance(-1);
-    				}
-    				else if(balanceZ == -1) {
-    					//Left child of z has height h-1, right child has height h.
-    					node.setBalance(1);
-    					y.setBalance(0);
-    				}
-    				
-    				node.setRight(rotateRight(y));
-    	            return rotateLeft(node);
-    			}
-    			else return node;
-    		}
-    		//Node is balanced
-    		else {
-    			node.setBalance(node.getBalance() - 1);
-    			return node;
-    		}
-    	}
+    	else if (key.compareTo(node.getKey()) > 0) node.setRight(insert(node.getRight(), key));
     	//Tree has the key on its root
+    	else return node;
+    		
+    	node.updateHeight();
+    	
+    	int balance = node.getBalance();
+    	
+    	//Left Left Case
+        if (balance > 1 && key.compareTo(node.getLeft().getKey()) < 0) return rotateRight(node);
+        //Right Right Case
+        else if (balance < -1 && key.compareTo(node.getRight().getKey()) > 0) return rotateLeft(node);
+        //Left Right Case
+        else if (balance > 1 && key.compareTo(node.getLeft().getKey()) > 0) {
+            node.setLeft(rotateLeft(node.getLeft()));
+            return rotateRight(node);
+        }
+        //Right Left Case
+        else if (balance < -1 && key.compareTo(node.getRight().getKey()) < 0) {
+            node.setRight(rotateRight(node.getRight()));
+            return rotateLeft(node);
+        }
+        //Node is balanced
         else return node;
     }
 
@@ -227,7 +158,7 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
     	stringBuilder.append("(");
     	//Print the root
     	if(node != null) {
-    		stringBuilder.append("[" + node.getBalance() + "]");
+    		stringBuilder.append("[" + node.getHeight() + "]");
     		stringBuilder.append(node.getKey() + ",");
     		//Print the left subtree
     		stringBuilder.append(toString(node.getLeft()));
@@ -253,6 +184,9 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
         
         y.setLeft(x);
         x.setRight(z);
+        
+        x.updateHeight();
+        y.updateHeight();
 
         return y;
     }
@@ -264,6 +198,9 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
         
         y.setRight(x);
         x.setLeft(z);
+        
+        x.updateHeight();
+        y.updateHeight();
 
         return y;
     }
