@@ -83,30 +83,78 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
     		
     	node.updateHeight();
     	
-    	int balance = node.getBalance();
-    	
-    	//Left Left Case
-        if (balance > 1 && key.compareTo(node.getLeft().getKey()) < 0) return rotateRight(node);
-        //Right Right Case
-        else if (balance < -1 && key.compareTo(node.getRight().getKey()) > 0) return rotateLeft(node);
-        //Left Right Case
-        else if (balance > 1 && key.compareTo(node.getLeft().getKey()) > 0) {
-            node.setLeft(rotateLeft(node.getLeft()));
-            return rotateRight(node);
-        }
-        //Right Left Case
-        else if (balance < -1 && key.compareTo(node.getRight().getKey()) < 0) {
-            node.setRight(rotateRight(node.getRight()));
-            return rotateLeft(node);
-        }
-        //Node is balanced
-        else return node;
+    	//Rebalance if needed
+    	return rebalance(node);
     }
 
 	@Override
 	public void remove(K key) {
-		// TODO Auto-generated method stub
-		
+		root = remove(root, key);
+	}
+	
+	private Node remove(Node node, K key) {
+		//Node is empty
+    	if (node == null) return null;
+    	//Delete on the left subtree
+    	else if (key.compareTo(node.getKey()) < 0) node.setLeft(remove(node.getLeft(), key));
+    	//Delete on the right subtree
+        else if (key.compareTo(node.getKey()) > 0) node.setRight(remove(node.getRight(), key));
+    	//Tree has the key on its root
+    	else {
+    		//The current node is a leaf (0 children).
+    		if (node.getLeft() == null && node.getRight() == null) return null;
+    		//The current node only has a right child
+    		else if (node.getLeft() == null) {
+                return node.getRight();
+            }
+    		//The current node only has a left child
+    		else if (node.getRight() == null) {
+                return node.getLeft();
+            }
+    		//The current node has two children
+    		else {
+    			Node largestLeftNode = getMax(node.getLeft());
+    			node.setKey(largestLeftNode.getKey());
+    			node.setLeft(remove(node.getLeft(), largestLeftNode.getKey()));
+    		}
+        }
+    		
+    	node.updateHeight();
+    	
+    	//Rebalance if needed
+    	return rebalance(node);
+	}
+	
+	private Node rebalance(Node node) {
+		int balance = node.getBalance();
+        if (balance > 1) {
+        	Node child = node.getLeft();
+        	int childBalance = child.getBalance();
+        	//Left Left Case
+        	if(childBalance >= 0) {
+        		return rotateRight(node);
+        	}
+        	//Left Right Case
+        	else {
+        		node.setLeft(rotateLeft(node.getLeft()));
+                return rotateRight(node);
+        	}
+        }
+        else if (balance < -1) {
+        	Node child = node.getRight();
+        	int childBalance = child.getBalance();
+        	//Right Right Case
+        	if(childBalance <= 0) {
+        		return rotateLeft(node);
+        	}
+        	//Right Left Case
+        	else {
+        		node.setRight(rotateRight(node.getRight()));
+                return rotateLeft(node);
+        	}
+        }
+        //Node is balanced
+        else return node;
 	}
 
 	/**

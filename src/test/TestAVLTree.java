@@ -63,25 +63,71 @@ public class TestAVLTree {
 		assertEquals(new Integer(2), avl.getMin());
 		assertEquals(new Integer(10), avl.getMax());
 		
-		/*
+		avl.dump("test.txt");
+		
 		avl.remove(7);
-		assertEquals("(4,(2,(),()),(6,(5,(),()),(10,(),())))", avl.toString());
+		assertEquals("([3]6,"
+				+ 		"([2]4,([1]2,(),()),([1]5,(),())),"
+				+ 		"([1]10,(),())"
+				+		")",
+				avl.toString());
 		assertEquals(new Integer(6), avl.find(6));
 		assertEquals(new Integer(2), avl.find(2));
 		assertEquals(null, avl.find(7));
 		
-		avl.remove(2);
-		assertEquals("(4,(),(6,(5,(),()),(10,(),())))", avl.toString());
+		avl.remove(10);
+		assertEquals("([3]4,"
+				+ 		"([1]2,(),()),"
+				+ 		"([2]6,([1]5,(),()),())"
+				+		")",
+				avl.toString());
 		assertEquals(new Integer(6), avl.find(6));
-		assertEquals(null, avl.find(2));
+		assertEquals(new Integer(2), avl.find(2));
 		assertEquals(null, avl.find(7));
-		assertEquals(new Integer(4), avl.getMin());
-		assertEquals(new Integer(10), avl.getMax());
-		*/
 		
-		System.out.println(avl.toString());
+		avl.remove(4);
+		assertEquals("([2]5,"
+				+ 		"([1]2,(),()),"
+				+ 		"([1]6,(),())"
+				+		")",
+				avl.toString());
+		assertEquals(new Integer(6), avl.find(6));
+		assertEquals(null, avl.find(4));
+		assertEquals(null, avl.find(7));
+		assertEquals(new Integer(2), avl.getMin());
+		assertEquals(new Integer(6), avl.getMax());
 		
-		avl.dump("test.txt");
+		avl.remove(2);
+		assertEquals("([2]5,(),([1]6,(),()))", avl.toString());
+		assertEquals(new Integer(6), avl.find(6));
+		assertEquals(null, avl.find(4));
+		assertEquals(null, avl.find(7));
+		assertEquals(new Integer(5), avl.getMin());
+		assertEquals(new Integer(6), avl.getMax());
+		
+		avl.remove(5);
+		assertEquals("([1]6,(),())", avl.toString());
+		assertEquals(new Integer(6), avl.find(6));
+		assertEquals(null, avl.find(4));
+		assertEquals(null, avl.find(7));
+		assertEquals(new Integer(6), avl.getMin());
+		assertEquals(new Integer(6), avl.getMax());
+		
+		avl.remove(6);
+		assertEquals("()", avl.toString());
+		assertEquals(null, avl.find(6));
+		assertEquals(null, avl.find(4));
+		assertEquals(null, avl.find(7));
+		assertEquals(null, avl.getMin());
+		assertEquals(null, avl.getMax());
+		
+		avl.remove(6);
+		assertEquals("()", avl.toString());
+		assertEquals(null, avl.find(6));
+		assertEquals(null, avl.find(4));
+		assertEquals(null, avl.find(7));
+		assertEquals(null, avl.getMin());
+		assertEquals(null, avl.getMax());	
 	}
 	
 	@Test
@@ -144,7 +190,7 @@ public class TestAVLTree {
 		assertEquals("goncalo", avl.getMin());
 		assertEquals("pedro", avl.getMax());
 
-		/*avl.remove("matheus");
+		avl.remove("matheus");
 		assertEquals("([2]goncalo,(),([1]pedro,(),()))", avl.toString());
 		assertEquals("goncalo", avl.find("goncalo"));
 		assertEquals("pedro", avl.find("pedro"));
@@ -166,7 +212,7 @@ public class TestAVLTree {
 		assertEquals("()", avl.toString());
 		assertEquals(null, avl.find("goncalo"));
 		assertEquals(null, avl.find("matheus"));
-		assertEquals(null, avl.find("pedro"));*/
+		assertEquals(null, avl.find("pedro"));
 		
 		System.out.println(avl.toString());
 		

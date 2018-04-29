@@ -56,23 +56,59 @@ public class TestSimpleBST {
 		assertEquals(new Integer(2), bst.getMin());
 		assertEquals(new Integer(10), bst.getMax());
 		
+		bst.dump("test.txt");
+		
+		bst.remove(10);
+		assertEquals("(4,(2,(),()),(7,(6,(5,(),()),()),()))", bst.toString());
+		assertEquals(new Integer(6), bst.find(6));
+		assertEquals(new Integer(2), bst.find(2));
+		assertEquals(new Integer(7), bst.find(7));
+		
 		bst.remove(7);
-		assertEquals("(4,(2,(),()),(6,(5,(),()),(10,(),())))", bst.toString());
+		assertEquals("(4,(2,(),()),(6,(5,(),()),()))", bst.toString());
 		assertEquals(new Integer(6), bst.find(6));
 		assertEquals(new Integer(2), bst.find(2));
 		assertEquals(null, bst.find(7));
 		
-		bst.remove(2);
-		assertEquals("(4,(),(6,(5,(),()),(10,(),())))", bst.toString());
+		bst.remove(4);
+		assertEquals("(2,(),(6,(5,(),()),()))", bst.toString());
 		assertEquals(new Integer(6), bst.find(6));
-		assertEquals(null, bst.find(2));
+		assertEquals(null, bst.find(4));
 		assertEquals(null, bst.find(7));
-		assertEquals(new Integer(4), bst.getMin());
-		assertEquals(new Integer(10), bst.getMax());
+		assertEquals(new Integer(2), bst.getMin());
+		assertEquals(new Integer(6), bst.getMax());
 		
-		System.out.println(bst.toString());
+		bst.remove(2);
+		assertEquals("(6,(5,(),()),())", bst.toString());
+		assertEquals(new Integer(6), bst.find(6));
+		assertEquals(null, bst.find(4));
+		assertEquals(null, bst.find(7));
+		assertEquals(new Integer(5), bst.getMin());
+		assertEquals(new Integer(6), bst.getMax());
 		
-		bst.dump("test.txt");
+		bst.remove(5);
+		assertEquals("(6,(),())", bst.toString());
+		assertEquals(new Integer(6), bst.find(6));
+		assertEquals(null, bst.find(4));
+		assertEquals(null, bst.find(7));
+		assertEquals(new Integer(6), bst.getMin());
+		assertEquals(new Integer(6), bst.getMax());
+		
+		bst.remove(6);
+		assertEquals("()", bst.toString());
+		assertEquals(null, bst.find(6));
+		assertEquals(null, bst.find(4));
+		assertEquals(null, bst.find(7));
+		assertEquals(null, bst.getMin());
+		assertEquals(null, bst.getMax());
+		
+		bst.remove(6);
+		assertEquals("()", bst.toString());
+		assertEquals(null, bst.find(6));
+		assertEquals(null, bst.find(4));
+		assertEquals(null, bst.find(7));
+		assertEquals(null, bst.getMin());
+		assertEquals(null, bst.getMax());
 	}
 	
 	@Test
