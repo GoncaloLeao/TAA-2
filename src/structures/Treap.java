@@ -86,8 +86,7 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public void insert(K key) {
-		if (this.find(key) != null)
-			size++;
+		if (this.find(key) == null) size++;
 		root = insert(root, key);
 	}
 
@@ -103,8 +102,7 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public void remove(K key) {
-		if (this.find(key) != null)
-			size--;
+		if (this.find(key) != null) size--;
 		root = remove(root, key);
 	}
 
@@ -121,16 +119,19 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 
 			// check if is a leaf
 			if (left == null && right == null) {
-				node = null;
+				return null;
 			} else {
 				// rotate the lowest priority child
 				int leftPriority = left != null ? left.getPriority() : INF;
 				int rightPriority = right != null ? right.getPriority() : INF;
 
-				if (leftPriority < rightPriority)
-					return remove(rotateRight(node).right, key);
-				else
-					return remove(rotateLeft(node).left, key);
+				if (leftPriority < rightPriority) {
+					node = rotateRight(node);
+					node.setRight(remove(node.right, key));
+				} else {
+					node = rotateLeft(node);
+					node.setLeft(remove(node.left, key));
+				}
 			}
 		}
 
@@ -275,6 +276,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	public int getSize() {
-		return this.getSize();
+		return this.size;
 	}
 }

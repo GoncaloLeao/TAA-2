@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,34 +56,49 @@ public class TestTreap {
 	}
 	
 	@Test
-	public void TestRamdom() {
-		int nElements = 20;
-		int maxRand = 1000;
+	public void TestRandom() {
+		int nElements = 2048;
+		int maxRand = 100000;
 		Treap<Integer> treap = new Treap<Integer>();
 		Random rand = new Random();
+		TreeSet<Integer> set = new TreeSet<Integer>();
 		
 		// test empty treap
 		assertNull(treap.find(1));
+		assertNull(treap.getMax());
+		assertNull(treap.getMin());
 		
 		// test random insertion of n elements
 		for (int i = 0; i < nElements; i++) {
 			int newElement = rand.nextInt(maxRand);
-			//System.out.println(newElement);
+			set.add(newElement);
 			treap.insert(newElement);
-			//System.out.println(treap.toString());
-			//treap.printTreeFormat();
+			
 			assertEquals(new Integer(newElement), treap.find(newElement));
 			assertTrue(checkHeapProperty(treap.getRoot()));
 			assertTrue(checkBTProperty(treap.getRoot()));
+			
+			assertEquals(set.size(), treap.getSize());
+			assertEquals(treap.getMin(), set.first());
+			assertEquals(treap.getMax(), set.last());
 		}
 		
 		// test random remove until empty treap
 		while (treap.getRoot() != null) {
 			int newElement = rand.nextInt(maxRand);
+			
+			set.remove(newElement);
 			treap.remove(newElement);
+			
 			assertNull(treap.find(newElement));
 			assertTrue(checkHeapProperty(treap.getRoot()));
 			assertTrue(checkBTProperty(treap.getRoot()));
+			
+			assertEquals(set.size(), treap.getSize());
+			if (set.size() > 0 && treap.getSize() > 0) {
+				assertEquals(set.first(), treap.getMin());
+				assertEquals(set.last(), treap.getMax());
+			}		
 		}
 		
 		// test empty treap
@@ -91,16 +107,13 @@ public class TestTreap {
 	
 	@Test
 	public void TestOrdered() {
-		int nElements = 20;
+		int nElements = 1024;
 		Treap<Integer> treap = new Treap<Integer>();
 		
 		// test ordered insertion of n elements
 		for (int i = 0; i < nElements; i++) {
 			int newElement = i;
-			//System.out.println(newElement);
 			treap.insert(newElement);
-			//System.out.println(treap.toString());
-			//treap.printTreeFormat();
 			assertEquals(new Integer(newElement), treap.find(newElement));
 			assertTrue(checkHeapProperty(treap.getRoot()));
 			assertTrue(checkBTProperty(treap.getRoot()));
