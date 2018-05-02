@@ -79,8 +79,8 @@ public class TestTreap {
 			assertTrue(checkBTProperty(treap.getRoot()));
 			
 			assertEquals(set.size(), treap.getSize());
-			assertEquals(treap.getMin(), set.first());
-			assertEquals(treap.getMax(), set.last());
+			assertEquals(set.first(), treap.getMin());
+			assertEquals(set.last(), treap.getMax());
 		}
 		
 		// test random remove until empty treap
