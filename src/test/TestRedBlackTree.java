@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayDeque;
@@ -21,12 +22,22 @@ public class TestRedBlackTree {
 		ArrayDeque<RedBlackTree<Integer>.Node> queue = new ArrayDeque<>();
 		queue.add(rb.getRoot());
 		node2count.put(rb.getRoot().hashCode(), 1);
-				
+		
+		// root property
+		assertEquals(false, rb.getRoot().getColor());
+		
 		while(!queue.isEmpty()) {
 			RedBlackTree<Integer>.Node top = queue.poll();
 			RedBlackTree<Integer>.Node left = top.getLeft();
 			RedBlackTree<Integer>.Node right = top.getRight();
-
+			
+			// Red Red property
+			if (top.getColor() == true) {
+				assertFalse(top.getLeft().getColor());
+				assertFalse(top.getRight().getColor());
+			}
+			
+			// Number of black property
 			int key = top.hashCode();
 			if (left.getKey() != null) {
 				int isBlack = left.getColor() == false ? 1 : 0;
@@ -47,8 +58,8 @@ public class TestRedBlackTree {
 	
 	@Test
 	public void TestRandom() {
-		int nElements = 300;
-		int maxRand = 20;
+		int nElements = 4096;
+		int maxRand = 100000;
 		RedBlackTree<Integer> rb = new RedBlackTree<Integer>();
 		Random rand = new Random();
 		TreeSet<Integer> set = new TreeSet<Integer>();
@@ -58,50 +69,20 @@ public class TestRedBlackTree {
 		assertNull(rb.getMax());
 		assertNull(rb.getMin());
 		
-		rb.insert(1);
-		System.out.println(rb.toString());
-		rb.insert(15);
-		System.out.println(rb.toString());
-		rb.insert(4);
-		System.out.println(rb.toString());
-		rb.insert(19);
-		System.out.println(rb.toString());
-		rb.insert(9);
-		System.out.println(rb.toString());
-		rb.insert(13);
-		System.out.println(rb.toString());
-		rb.insert(5);
-		System.out.println(rb.toString());
-		rb.insert(8);
-		System.out.println(rb.toString());
-		rb.insert(11);
-		System.out.println(rb.toString());
-		rb.insert(19);
-		System.out.println(rb.toString());
-		rb.insert(5);
-		System.out.println(rb.toString());
-		rb.insert(7);
-
-		System.out.println(rb.toString());
-		System.out.println(rb.find(7));
-		
 		// test random insertion of n elements
-		/*for (int i = 0; i < nElements; i++) {
+		for (int i = 0; i < nElements; i++) {
 			int newElement = rand.nextInt(maxRand);
-			System.out.println(newElement);
+			//System.out.println(newElement);
 			set.add(newElement);
 			rb.insert(newElement);
 			
 			assertEquals(new Integer(newElement), rb.find(newElement));
 			
-			// testing root
-			assertEquals(false, rb.getRoot().getColor());
-			
 			checkRedBlackInvariant(rb);
 			
 			assertEquals(set.first(), rb.getMin());
 			assertEquals(set.last(), rb.getMax());
-		}*/
+		}
 	}
 	
 }

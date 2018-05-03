@@ -1,17 +1,14 @@
 package structures;
 
-import java.net.Socket;
-
-import structures.Treap.Node;
-
 public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 	private final boolean BLACK = false;
 	private final boolean RED = true;
 	private final Node LEAF = new Node(null, BLACK, null);
-	private Node root = LEAF;
+
+	private Node root;
 	private Node tmpNewNode;
-	
+
 	public class Node {
 		private K key;
 		private Node left;
@@ -38,7 +35,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		public Node getRight() {
 			return right;
 		}
-		
+
 		public Node getParent() {
 			return parent;
 		}
@@ -58,16 +55,20 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		public void setRight(Node right) {
 			this.right = right;
 		}
-		
+
 		public void setParent(Node parent) {
 			this.parent = parent;
 		}
-		
+
 		public void setColor(boolean color) {
 			this.color = color;
 		}
 	}
-	
+
+	public RedBlackTree() {
+		root = LEAF;
+	}
+
 	/**
 	 * The implementation is the usual one for Binary Trees.
 	 */
@@ -95,13 +96,10 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	public void insert(K key) {
 		// the tree is empty
 		if (root == LEAF) {
-			root = new Node(key, BLACK, null); 
-		} else if (find(key) == null){
+			root = new Node(key, BLACK, null);
+		} else if (find(key) == null) {
 			root = insert(root, key, root);
-			/*if (tmpNewNode.getParent() != null && tmpNewNode.getParent().getParent() != null &&
-					tmpNewNode.getParent().getParent().getParent() != null) {
-				System.out.println("Cara: "+tmpNewNode.getParent().getParent().getParent().getKey());
-			}*/
+			// tmpNewNode is a global node to store the last insertion
 			checkInvariant(tmpNewNode);
 		}
 	}
@@ -113,10 +111,10 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			node.setLeft(insert(node.getLeft(), key, node));
 		else if (key.compareTo(node.getKey()) > 0)
 			node.setRight(insert(node.getRight(), key, node));
-		
+
 		return node;
 	}
-	
+
 	@Override
 	public void remove(K key) {
 		root = remove(root, key);
@@ -130,12 +128,12 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		else if (key.compareTo(node.getKey()) > 0)
 			node.setRight(remove(node.getRight(), key));
 		else {
-			
+
 		}
 
 		return node;
 	}
-	
+
 	/**
 	 * The implementation is the same as SimpleBST.
 	 */
@@ -177,17 +175,17 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		else
 			return getMax(node.getRight());
 	}
-	
+
 	@Override
 	public void dump(String filename) {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public String toString() {
 		return toString(root);
 	}
-	
+
 	// print the values in the treap in pre-order (to p)
 	private String toString(Node node) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -206,51 +204,58 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 		return stringBuilder.toString();
 	}
-	
+
 	public int countBlacks() {
 		return countBlacks(root);
 	}
-	
+
 	private int countBlacks(Node node) {
-		if (node == LEAF) return 0;
-		return (node.getColor() == BLACK ? 1 : 0) + countBlacks(node.getLeft()); 
+		if (node == LEAF)
+			return 0;
+		return (node.getColor() == BLACK ? 1 : 0) + countBlacks(node.getLeft());
 	}
-	
+
 	public Node getRoot() {
 		return this.root;
 	}
-	
+
+	/**
+	 * Receives a node that is the last inserted node and check the properties of the
+	 * Red Black Tree after this.
+	 * 
+	 * @param node
+	 */
 	private void checkInvariant(Node node) {
 		if (node == null) return;
 		if (node == root) {
 			root.setColor(BLACK);
 			return;
 		}
-		// if the parent is red we have two consecutive red nodes
+		// If the parent is red we have two consecutive red nodes
 		if (node.getParent().getColor() == RED) {
 			// Case 1 The uncle is a black node
 			if (uncle(node).color == BLACK) {
 				if (isLeftChild(node.getParent())) {
 					if (isLeftChild(node)) {
-						System.out.println("Caso1a");
+						// System.out.println("Caso1a");
 						case1A(node);
 					} else {
-						System.out.println("Caso1b");
+						// System.out.println("Caso1b");
 						case1B(node);
 					}
 				} else {
 					if (!isLeftChild(node)) {
-						System.out.println("Caso1c");
+						// System.out.println("Caso1c");
 						case1C(node);
 					} else {
-						System.out.println("Caso1d");
+						// System.out.println("Caso1d");
 						case1D(node);
 					}
 				}
-			} 
+			}
 			// Case 2 The uncle is a red node
 			else {
-				System.out.println("Caso2");
+				// System.out.println("Caso2");
 				uncle(node).setColor(BLACK);
 				node.getParent().setColor(BLACK);
 				grandparent(node).setColor(RED);
@@ -258,20 +263,21 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			}
 		}
 	}
-	
+
 	private boolean isLeftChild(Node node) {
 		Node parent = node.getParent();
-		if (parent.getLeft() == node) return true;
+		if (parent.getLeft() == node)
+			return true;
 		return false;
 	}
-	
+
 	// Case 1 a - Uncle is a black node and the inserted node is a left child
 	private void case1A(Node node) {
 		grandparent(node).setColor(RED);
 		node.getParent().setColor(BLACK);
-		
+
 		Node tmp = grandparent(node.getParent());
-		
+
 		if (tmp == null) {
 			root = rotateRight(grandparent(node));
 		} else {
@@ -282,7 +288,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			}
 		}
 	}
-	
+
 	// Case 1 b - Uncle is a black node and the inserted node is a right child
 	private void case1B(Node node) {
 		grandparent(node).setLeft(rotateLeft(node.getParent()));
@@ -293,15 +299,10 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	private void case1C(Node node) {
 		grandparent(node).setColor(RED);
 		node.getParent().setColor(BLACK);
-		System.out.println("NOde:"+node.getKey());
-		System.out.println("Parent: "+node.getParent().getKey());
-		System.out.println("Grand: "+grandparent(node).getKey());
 		Node tmp = grandparent(node.getParent());
 		if (tmp == null) {
 			root = rotateLeft(grandparent(node));
 		} else {
-			System.out.println("Ances1: "+grandparent(node).getParent().getKey());
-			System.out.println("Ances2: "+tmp.getKey());
 			if (isLeftChild(grandparent(node))) {
 				tmp.setLeft(rotateLeft(grandparent(node)));
 			} else {
@@ -309,38 +310,42 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			}
 		}
 	}
-	
+
 	// Case 1 d - Symmetric of 1 b
 	private void case1D(Node node) {
 		grandparent(node).setRight(rotateRight(node.getParent()));
 		case1C(node.right);
 	}
-	
+
 	private Node grandparent(Node node) {
 		Node parent = node.getParent();
 		// There is no father
-		if (parent == null) return null;
+		if (parent == null)
+			return null;
 		return parent.getParent();
 	}
-	
+
 	private Node sibling(Node node) {
 		Node parent = node.getParent();
 		// There is no father, so there is no sibling
-		if (parent == null) return null;
-		
-		// Verify if is the node itself or the sibling 
-		if (node == parent.getLeft()) return parent.getRight();
+		if (parent == null)
+			return null;
+
+		// Verify if it is the node itself or the sibling
+		if (node == parent.getLeft())
+			return parent.getRight();
 		return parent.getLeft();
 	}
-	
+
 	private Node uncle(Node node) {
 		Node parent = node.getParent();
 		Node grand = grandparent(node);
 		// There is no grandfather
-		if (grand == null) return null;
+		if (grand == null)
+			return null;
 		return sibling(parent);
 	}
-	
+
 	private Node rotateLeft(Node x) {
 		Node y = x.getRight();
 		if (y == null)
@@ -350,9 +355,10 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		y.setLeft(x);
 		x.setRight(z);
 
+		z.setParent(x);
 		y.setParent(x.getParent());
 		x.setParent(y);
-		
+
 		return y;
 	}
 
@@ -364,41 +370,12 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 		y.setRight(x);
 		x.setLeft(z);
-		
+
+		z.setParent(x);
 		y.setParent(x.getParent());
 		x.setParent(y);
-		
+
 		return y;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
