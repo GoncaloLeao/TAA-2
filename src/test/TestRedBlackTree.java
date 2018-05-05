@@ -25,8 +25,8 @@ public class TestRedBlackTree {
 	
 	@BeforeAll
 	public static void setUp() {
-		nElements = 4096;
-		maxRand = 10000;
+		nElements = 10000;
+		maxRand = 100000;
 		rand = new Random();
 	} 
 	
@@ -46,7 +46,6 @@ public class TestRedBlackTree {
 		// test random insertion of n elements
 		for (int i = 0; i < nElements; i++) {
 			int newElement = rand.nextInt(maxRand);
-			//System.out.println(newElement);
 			set.add(newElement);
 			rb.insert(newElement);
 			
@@ -66,17 +65,14 @@ public class TestRedBlackTree {
 		assertNull(rb.getMax());
 		assertNull(rb.getMin());
 		
-		// test random insertion of n elements
 		for (int i = 0; i < nElements; i++) {
 			int newElement = rand.nextInt(maxRand);
 			int sort = rand.nextInt(100);
 			
 			if (sort > 50) {
-				System.out.println("Insert: "+newElement);
 				set.add(newElement);
 				rb.insert(newElement);
 			} else {
-				System.out.println("Remove: "+newElement);
 				set.remove(newElement);
 				rb.remove(newElement);
 			}
@@ -238,7 +234,7 @@ public class TestRedBlackTree {
 				assertFalse(top.getRight().getColor());
 			}
 			
-			// Number of black property
+			// Number of blacks property
 			int key = top.hashCode();
 			if (left.getKey() != null) {
 				int isBlack = left.getColor() == false ? 1 : 0;
