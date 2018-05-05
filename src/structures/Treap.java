@@ -61,9 +61,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		this.size = 0;
 	}
 
-	/**
-	 * The implementation is the usual one for Binary Trees.
-	 */
 	@Override
 	public K find(K key) {
 		Node node = find(root, key);
@@ -117,7 +114,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 			Node left = node.getLeft();
 			Node right = node.getRight();
 
-			// check if is a leaf
 			if (left == null && right == null) {
 				return null;
 			} else {
@@ -156,9 +152,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		return node;
 	}
 
-	/**
-	 * The implementation is the same as SimpleBST.
-	 */
 	@Override
 	public K getMin() {
 		Node node = getMin(root);
@@ -177,9 +170,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 			return getMin(node.getLeft());
 	}
 
-	/**
-	 * The implementation is the same as SimpleBST.
-	 */
 	@Override
 	public K getMax() {
 		Node node = getMax(root);
@@ -203,7 +193,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		return toString(root);
 	}
 
-	// print the values in the treap in pre-order (to p)
 	private String toString(Node node) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("(");
@@ -251,16 +240,12 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		return y;
 	}
 
-	/**
-	 * Get a single tree format - just to debug
-	 */
 	public void printTreeFormat() {
 		System.out.println();
 		printTreeFormat(this.root, 0);
 		System.out.println();
 	}
 
-	// visit preorder to print the nodes
 	private void printTreeFormat(Node node, int deepth) {
 		if (node == null)
 			return;
