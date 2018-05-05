@@ -1,13 +1,26 @@
 package structures;
 
+import structures.SimpleBST.Node;
+
+/**
+ * A self-balanced binary search tree where each node has an extra bit and that
+ * bit is interpreted as the color (red or black). These color bits are used to
+ * ensure the tree remains approximately balanced during insertions and
+ * deletions.
+ * 
+ * @author Matheus Rosa
+ *
+ */
 public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 	private final boolean BLACK = false;
 	private final boolean RED = true;
 	private final Node LEAF = new Node(null, BLACK, null);
+	private final Node DBLACK = new Node(null, BLACK, null);
 
 	private Node root;
 	private Node tmpNewNode;
+	private Node u, v;
 
 	public class Node {
 		private K key;
@@ -82,7 +95,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	private Node find(Node node, K key) {
-		if (node == LEAF)
+		if (node.getKey() == null)
 			return null;
 		else if (key.compareTo(node.getKey()) < 0)
 			return find(node.getLeft(), key);
@@ -95,7 +108,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	@Override
 	public void insert(K key) {
 		// the tree is empty
-		if (root == LEAF) {
+		if (root.getKey() == null) {
 			root = new Node(key, BLACK, null);
 		} else if (find(key) == null) {
 			root = insert(root, key, root);
@@ -105,7 +118,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	private Node insert(Node node, K key, Node parent) {
-		if (node == LEAF)
+		if (node.getKey() == null)
 			return tmpNewNode = new Node(key, RED, parent);
 		else if (key.compareTo(node.getKey()) < 0)
 			node.setLeft(insert(node.getLeft(), key, node));
@@ -117,23 +130,162 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public void remove(K key) {
-		root = remove(root, key);
-	}
-
-	private Node remove(Node node, K key) {
-		if (node == null)
-			return null;
-		else if (key.compareTo(node.getKey()) < 0)
-			node.setLeft(remove(node.getLeft(), key));
-		else if (key.compareTo(node.getKey()) > 0)
-			node.setRight(remove(node.getRight(), key));
-		else {
-
+		if (remove(root, key) != null) {
+			System.out.println();
+			deleteProcess(v, u);
 		}
-
-		return node;
 	}
-
+	
+	private Node remove(Node node, K key) {
+    	//Node is empty
+    	if (node.key == null) {
+    		u = DBLACK;
+    		v = DBLACK;
+    		return null;
+    	}
+    	//Delete on the left subtree
+    	else if (key.compareTo(node.getKey()) < 0) {
+    		return remove(node.getLeft(), key);
+    	}
+    	//Delete on the right subtree
+        else if (key.compareTo(node.getKey()) > 0) {
+        	return remove(node.getRight(), key);
+        }
+    	//Tree has the key on its root
+    	else {
+    		//The current node is a leaf (0 children).
+    		if (node.getLeft().getKey() == null && node.getRight().getKey() == null) {
+    			v = node;
+    			u = DBLACK;
+    			return node;
+    		}
+    		//The current node only has a right child
+    		else if (node.getLeft().getKey() == null) {
+                v = node;
+    			u = node.getRight();
+    			return node;
+            }
+    		//The current node only has a left child
+    		else if (node.getRight().getKey() == null) {
+                v = node;
+    			u = node.getLeft();
+    			return node;
+            }
+    		//The current node has two children
+    		else {
+    			Node largestLeftNode = getMax(node.getLeft());
+    			node.setKey(largestLeftNode.getKey());
+    			remove(node.getLeft(), largestLeftNode.getKey());
+    			return node;
+    		}
+        }
+	}
+	
+	private void deleteProcess(Node v, Node u) {
+		if (v == root) {
+			u.setColor(BLACK);
+			root = u;
+			return;
+		}
+		// Simple case: one of the nodes u, v are red
+		if (v.getColor() == RED || u.getColor() == RED) {
+			u.setParent(v.getParent());
+			u.setColor(BLACK);
+			if (isLeftChild(v)) v.getParent().setLeft(u);
+			else v.getParent().setRight(u);
+			v = null;
+		}
+		// Both nodes u, v are black
+		else {
+			u.setParent(v.getParent());
+			if (isLeftChild(v)) v.getParent().setLeft(u);
+			else v.getParent().setRight(u);
+			v = LEAF;
+			deleteBlackBlack(u);
+			u = LEAF;
+		}
+	}
+	
+	private void deleteBlackBlack(Node x) {
+		if (x == root || x.getColor() == RED) {
+			x.setColor(BLACK);
+			return;
+		}
+		
+		Node next = root;
+		
+		if (isLeftChild(x)) {
+		
+			Node w1 = sibling(x);
+			
+			if (w1.getColor() == RED) {
+				//System.out.println("Caso 11");
+				x.getParent().setColor(RED);
+				w1.setColor(BLACK);
+				rotateLeftUpdating(x.getParent());
+			}
+			
+			Node w2 = sibling(x);
+			
+			if (w2.getLeft().getColor() == BLACK && w2.getRight().getColor() == BLACK) {
+				//System.out.println("Case 21");
+				w2.setColor(RED);
+				next = x.getParent();
+			} else {
+				if (w2.getRight().getColor() == BLACK) {
+					//System.out.println("Case 31");
+					w2.getLeft().setColor(BLACK);
+					w2.setColor(RED);
+					rotateRightUpdating(w2);
+				}
+				
+				//System.out.println("Case 41");
+				Node w3 = sibling(x);
+				
+				w3.setColor(x.getParent().getColor());
+				x.getParent().setColor(BLACK);
+				w3.getRight().setColor(BLACK);
+				rotateLeftUpdating(x.getParent());
+				next = root;
+			}
+		} else {
+			Node w1 = sibling(x);
+			
+			if (w1.getColor() == RED) {
+				//System.out.println("Caso 12");
+				x.getParent().setColor(RED);
+				w1.setColor(BLACK);
+				rotateRightUpdating(x.getParent());
+			}
+			
+			Node w2 = sibling(x);
+			
+			if (w2.getRight().getColor() == BLACK && w2.getLeft().getColor() == BLACK) {
+				//System.out.println("Case 22");
+				w2.setColor(RED);
+				next = x.getParent();
+			} else {
+				if (w2.getLeft().getColor() == BLACK) {
+					//System.out.println("Case 32");
+					w2.getRight().setColor(BLACK);
+					w2.setColor(RED);
+					rotateLeftUpdating(w2);
+				}
+				
+				//System.out.println("Case 42");
+				Node w3 = sibling(x);
+				
+				w3.setColor(x.getParent().getColor());
+				x.getParent().setColor(BLACK);
+				w3.getLeft().setColor(BLACK);
+				rotateRightUpdating(x.getParent());
+				next = root;
+			}
+		}
+		
+		deleteBlackBlack(next);
+	}
+	
 	/**
 	 * The implementation is the same as SimpleBST.
 	 */
@@ -191,7 +343,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("(");
 		// Print the root
-		if (node != LEAF) {
+		if (node != LEAF && node != DBLACK) {
 			stringBuilder.append("[" + node.getColor() + "]");
 			stringBuilder.append(node.getKey() + ",");
 			// Print the left subtree
@@ -220,13 +372,14 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	/**
-	 * Receives a node that is the last inserted node and check the properties of the
-	 * Red Black Tree after this.
+	 * Receives a node that is the last inserted node and check the properties of
+	 * the Red Black Tree after this.
 	 * 
 	 * @param node
 	 */
 	private void checkInvariant(Node node) {
-		if (node == null) return;
+		if (node == null)
+			return;
 		if (node == root) {
 			root.setColor(BLACK);
 			return;
@@ -358,7 +511,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		z.setParent(x);
 		y.setParent(x.getParent());
 		x.setParent(y);
-
+		
 		return y;
 	}
 
@@ -378,4 +531,31 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		return y;
 	}
 
+	private void rotateRightUpdating(Node node) {
+		Node tmp = node.getParent();
+		
+		if (tmp == null) {
+			root = rotateRight(node);
+		} else {
+			if (isLeftChild(node)) {
+				tmp.setLeft(rotateRight(node));
+			} else {
+				tmp.setRight(rotateRight(node));
+			}
+		}
+	}
+	
+	private void rotateLeftUpdating(Node node) {
+		Node tmp = node.getParent();
+		if (tmp == null) {
+			root = rotateLeft(node);
+		} else {
+			if (isLeftChild(node)) {
+				tmp.setLeft(rotateLeft(node));
+			} else {
+				tmp.setRight(rotateLeft(node));
+			}
+		}
+	}
+	
 }
