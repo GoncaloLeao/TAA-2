@@ -72,11 +72,11 @@ public class TestRedBlackTree {
 			int sort = rand.nextInt(100);
 			
 			if (sort > 50) {
-				System.out.println("Insert: "+newElement);
+				//System.out.println("Insert: "+newElement);
 				set.add(newElement);
 				rb.insert(newElement);
 			} else {
-				System.out.println("Remove: "+newElement);
+				//System.out.println("Remove: "+newElement);
 				set.remove(newElement);
 				rb.remove(newElement);
 			}
@@ -89,8 +89,13 @@ public class TestRedBlackTree {
 			
 			checkRedBlackInvariant(rb);
 			
-			assertEquals(set.first(), rb.getMin());
-			assertEquals(set.last(), rb.getMax());
+			if (set.size() > 0) {
+				assertEquals(set.first(), rb.getMin());
+				assertEquals(set.last(), rb.getMax());
+			} else {
+				assertNull(rb.getMin());
+				assertNull(rb.getMin());
+			}
 		}
 	}
 	
@@ -214,7 +219,9 @@ public class TestRedBlackTree {
 		TreeMap<Integer, Integer> node2count = new TreeMap<>();
 		Integer numberBlacks = rb.countBlacks();
 		ArrayDeque<RedBlackTree<Integer>.Node> queue = new ArrayDeque<>();
-		queue.add(rb.getRoot());
+		
+		if (rb.getRoot().getKey() != null)
+			queue.add(rb.getRoot());
 		node2count.put(rb.getRoot().hashCode(), 1);
 		
 		// root property

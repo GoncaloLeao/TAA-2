@@ -138,7 +138,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	private Node remove(Node node, K key) {
     	//Node is empty
-    	if (node.key == null) {
+    	if (node.getKey() == null) {
     		u = DBLACK;
     		v = DBLACK;
     		return null;
