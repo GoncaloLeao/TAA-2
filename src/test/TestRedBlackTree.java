@@ -25,8 +25,8 @@ public class TestRedBlackTree {
 	
 	@BeforeAll
 	public static void setUp() {
-		nElements = 100;
-		maxRand = 500;
+		nElements = 4096;
+		maxRand = 10000;
 		rand = new Random();
 	} 
 	
@@ -72,11 +72,11 @@ public class TestRedBlackTree {
 			int sort = rand.nextInt(100);
 			
 			if (sort > 50) {
-				//System.out.println("Insert: "+newElement);
+				System.out.println("Insert: "+newElement);
 				set.add(newElement);
 				rb.insert(newElement);
 			} else {
-				//System.out.println("Remove: "+newElement);
+				System.out.println("Remove: "+newElement);
 				set.remove(newElement);
 				rb.remove(newElement);
 			}

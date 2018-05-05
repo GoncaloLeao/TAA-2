@@ -301,7 +301,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	protected final Node getMin(Node node) {
 		if (node == null)
 			return null;
-		else if (node.getLeft() == LEAF)
+		else if (node.getLeft() == LEAF || node.getLeft() == DBLACK)
 			return node;
 		else
 			return getMin(node.getLeft());
@@ -322,7 +322,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	protected final Node getMax(Node node) {
 		if (node == null)
 			return null;
-		else if (node.getRight() == LEAF)
+		else if (node.getRight() == LEAF || node.getRight() == DBLACK)
 			return node;
 		else
 			return getMax(node.getRight());
@@ -362,7 +362,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	private int countBlacks(Node node) {
-		if (node == LEAF)
+		if (node.getKey() == null)
 			return 0;
 		return (node.getColor() == BLACK ? 1 : 0) + countBlacks(node.getLeft());
 	}
