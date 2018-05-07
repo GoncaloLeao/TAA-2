@@ -19,7 +19,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 	private int maxLevel;
 	private Node head;
 	private Node nil;
-	private Random rand;
+	private final Random rand = new Random();
 
 	public class Node {
 		private K key;
@@ -46,6 +46,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 	public SkipList() {
 		head = new Node(null);
 		nil = new Node(null);
+		head.getList().add(nil);
 		maxLevel = 0;
 	}
 
@@ -55,26 +56,28 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 
 		// loop invariant: x->key < search key
 		for (int i = maxLevel; i >= 0; i--) {
-			while (x.getList().get(i) != nil && x.getList().get(i).getList().get(i).getKey().compareTo(key) < 0) {
+			while (x.getList().get(i) != nil && x.getList().get(i).getKey().compareTo(key) < 0) {
 				x = x.getList().get(i);
 			}
 		}
 
 		x = x.getList().get(0);
 
-		if (x.getKey().compareTo(key) == 0)
+		if (x != nil && x.getKey().compareTo(key) == 0) {
 			return x.getKey();
+		}
 		return null;
 	}
 
 	@Override
 	public void insert(K key) {
-		ArrayList<Node> update = new ArrayList<>(maxLevel);
+		ArrayList<Node> update = createArray(maxLevel+1);
 		Node x = head;
 
 		// search for the first node before key
 		for (int i = maxLevel; i >= 0; i--) {
-			while (x.getList().get(i) != nil && x.getList().get(i).getList().get(i).getKey().compareTo(key) < 0) {
+			while (x.getList().get(i) != nil && 
+					x.getList().get(i).getKey().compareTo(key) < 0) {
 				x = x.getList().get(i);
 			}
 			update.set(i, x);
@@ -82,11 +85,11 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 
 		x = x.getList().get(0);
 
-		if (x.getKey().compareTo(key) == 0)
+		if (x != nil && x.getKey().compareTo(key) == 0)
 			return;
 
-		int v = rand.nextInt(maxLevel + 1);
-
+		int v = rand.nextInt(maxLevel + 2);
+		
 		if (v > maxLevel) {
 			head.getList().add(nil);
 			update.add(head);
@@ -96,34 +99,31 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		Node newNode = new Node(key);
 
 		for (int i = 0; i <= v; i++) {
-			newNode.getList().set(i, update.get(i).getList().get(i));
-			update.set(i, newNode);
+			newNode.getList().add(update.get(i).getList().get(i));
+			update.get(i).getList().set(i, newNode);
 		}
 	}
 
 	@Override
 	public void remove(K key) {
-		remove(head, key);
-	}
-
-	private void remove(Node node, K key) {
-		ArrayList<Node> update = new ArrayList<>(maxLevel);
+		ArrayList<Node> update = createArray(maxLevel+1);
 
 		Node x = head;
-		for (int i = maxLevel; i >= 0; i++) {
-			while (x.getList().get(i) != nil && x.getList().get(i).getList().get(i).getKey().compareTo(key) < 0) {
+		// search for the first node before key
+		for (int i = maxLevel; i >= 0; i--) {
+			while (x.getList().get(i) != nil && 
+					x.getList().get(i).getKey().compareTo(key) < 0) {
 				x = x.getList().get(i);
 			}
 			update.set(i, x);
 		}
 
 		x = x.getList().get(0);
-
-		if (x.getKey().compareTo(key) == 0) {
-			for (int i = 0; i < maxLevel; i++) {
-				if (update.get(i) != x)
+		if (x != nil && x.getKey().compareTo(key) == 0) {
+			for (int i = 0; i <= maxLevel; i++) {
+				if (update.get(i).getList().get(i) != x)
 					break;
-				update.set(i, x.getList().get(i));
+				update.get(i).getList().set(i, x.getList().get(i));
 			}
 			x = null;
 
@@ -142,7 +142,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 	@Override
 	public K getMax() {
 		Node x = head;
-		for (int i = maxLevel; i >= 0; i++) {
+		for (int i = maxLevel; i >= 0; i--) {
 			while (x.getList().get(i) != nil) {
 				x = x.getList().get(i);
 			}
@@ -155,5 +155,37 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder string = new StringBuilder();
+		
+		Node x = head;
+		
+		for (int i = maxLevel; i >= 0; i--) {
+			string.append("HEAD ");
+			while (x.getList().get(0) != nil) {
+				x = x.getList().get(0);
+				if (x.getList().size() >= i) {
+					string.append("-> "+x.getKey()+" ");
+				} else {
+					string.append("------");
+				}
+			}
+			string.append("-> NIL\n");
+			x = head;
+		}
+		
+		return string.toString();
+	}
 
+	private ArrayList<Node> createArray(int size) {
+		ArrayList<Node> newArray = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			newArray.add(null);
+		}
+		return newArray;
+	} 
+	
 }
