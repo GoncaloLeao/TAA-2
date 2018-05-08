@@ -16,15 +16,15 @@ import structures.DynamicSet;
 public class Benchmark {
 
 	private final Random RAND = new Random();
-	private final int MAX_RAND = 100000;
-	private final int TESTS = 4;
+	private final int MAX_RAND = 100000000;
+	private final int TESTS = 5;
 
 	private int numberTests;
 	private int stepSize;
 	private int numberSamples;
 
 	public static enum Type {
-		INSERT, REMOVE, MAX, MIN;
+		FIND, INSERT, REMOVE, MAX, MIN;
 	}
 
 	public Benchmark(int numberTests, int stepSize, int numberSamples) {
@@ -79,6 +79,14 @@ public class Benchmark {
 				for (Integer it : auxSet) {
 					cont = 0L;
 					start = System.nanoTime();
+					set.find(it);
+					cont += System.nanoTime() - start;
+					incrementValue(results, j, Type.FIND, cont);
+				}
+				
+				for (Integer it : auxSet) {
+					cont = 0L;
+					start = System.nanoTime();
 					set.remove(it);
 					cont += System.nanoTime() - start;
 					incrementValue(results, j, Type.REMOVE, cont);
@@ -88,7 +96,7 @@ public class Benchmark {
 
 		for (int i = 0; i < results.size(); i++) {
 			for (int j = 0; j < results.get(i).size(); j++) {
-				results.get(i).set(j, results.get(i).get(j) / numberSamples);
+				results.get(i).set(j, (results.get(i).get(j) / numberSamples)/(stepSize*(i+1)));
 			}
 		}
 
@@ -97,17 +105,20 @@ public class Benchmark {
 
 	private void incrementValue(ArrayList<ArrayList<Long>> target, int caseTest, Type operation, Long value) {
 		switch (operation) {
-		case INSERT:
+		case FIND:
 			target.get(0).set(caseTest, target.get(0).get(caseTest) + value);
 			break;
-		case REMOVE:
+		case INSERT:
 			target.get(1).set(caseTest, target.get(1).get(caseTest) + value);
 			break;
-		case MAX:
+		case REMOVE:
 			target.get(2).set(caseTest, target.get(2).get(caseTest) + value);
 			break;
-		case MIN:
+		case MAX:
 			target.get(3).set(caseTest, target.get(3).get(caseTest) + value);
+			break;
+		case MIN:
+			target.get(4).set(caseTest, target.get(4).get(caseTest) + value);
 			break;
 		default:
 			System.out.println("Invalid opeartion!");

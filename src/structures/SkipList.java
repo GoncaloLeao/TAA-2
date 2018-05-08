@@ -84,11 +84,14 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 
 		x = x.getList().get(0);
-
+		
 		if (x != nil && x.getKey().compareTo(key) == 0)
 			return;
 
-		int v = rand.nextInt(maxLevel + 2);
+		int v = 0;
+		while (rand.nextBoolean()) v++;
+		
+		v = Math.min(v, maxLevel+1);
 		
 		if (v > maxLevel) {
 			head.getList().add(nil);
@@ -101,7 +104,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		for (int i = 0; i <= v; i++) {
 			newNode.getList().add(update.get(i).getList().get(i));
 			update.get(i).getList().set(i, newNode);
-		}
+		}		
 	}
 
 	@Override

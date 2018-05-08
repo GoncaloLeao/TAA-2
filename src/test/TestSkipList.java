@@ -23,7 +23,7 @@ public class TestSkipList {
 	
 	@BeforeAll
 	public static void setUp() {
-		nElements = 8192;
+		nElements = 100;
 		maxRand = 10000;
 		rand = new Random();
 	}
@@ -93,6 +93,7 @@ public class TestSkipList {
 	@Test
 	public void TestRandom() {
 		for (int i = 0; i < nElements; i++) {
+			
 			int newElement = 10+rand.nextInt(maxRand);
 			if (rand.nextBoolean()) {
 				list.insert(newElement);

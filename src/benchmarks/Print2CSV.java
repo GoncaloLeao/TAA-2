@@ -42,7 +42,7 @@ public class Print2CSV {
 		}
 		
 		StringBuilder string = new StringBuilder();
-		string.append("label");
+		string.append("Number of elements");
 		for (int i = 0; i < data.get(0).size(); i++)
 			string.append("," + (i + 1) * step);
 		string.append("\n");
