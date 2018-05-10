@@ -1,7 +1,5 @@
 package structures;
 
-import structures.SimpleBST.Node;
-
 /**
  * A self-balanced binary search tree where each node has an extra bit and that
  * bit is interpreted as the color (red or black). These color bits are used to

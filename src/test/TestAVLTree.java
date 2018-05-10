@@ -158,8 +158,6 @@ public class TestAVLTree {
 		assertEquals(new Integer(7), avl.getMax());
 		
 		System.out.println(avl.toString());
-		
-		avl.dump("test.txt");
 	}
 	
 	@Test
@@ -215,8 +213,6 @@ public class TestAVLTree {
 		assertEquals(null, avl.find("pedro"));
 		
 		System.out.println(avl.toString());
-		
-		avl.dump("test.txt");
 	}
 
 }

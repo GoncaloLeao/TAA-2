@@ -1,4 +1,4 @@
-package test;
+/*package test;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,3 +134,4 @@ public class TestTreap {
 		}
 	}
 }
+*/

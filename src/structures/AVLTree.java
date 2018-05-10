@@ -1,5 +1,10 @@
 package structures;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.LinkedList;
+
 public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	public class Node {
@@ -219,10 +224,71 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
         return stringBuilder.toString();
     }
 
+    @SuppressWarnings("unchecked")
 	@Override
 	public void dump(String filename) {
-		// TODO Auto-generated method stub
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(new FileOutputStream(filename, false));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("The specified file " + filename + " does not exist.");
+		}
+
+		writer.println("digraph {");
+
+		// Dump all the nodes
+		LinkedList<Node> curLevelNodes = new LinkedList<Node>();
+		LinkedList<Node> nextLevelNodes = new LinkedList<Node>();
+		int nullDotCount = 0;
 		
+		if(root != null) {
+			curLevelNodes.add(root);
+			do {
+				nextLevelNodes.clear();
+				
+				//Draw the current level's nodes
+				writer.print(" { rank=same; ");
+				for(int i = 0; i < curLevelNodes.size(); i++) {
+					Node node = curLevelNodes.get(i);
+					writer.print(node.getKey() + "; ");
+				}
+				writer.println("}");
+				
+				while(!curLevelNodes.isEmpty()) {
+					Node node = curLevelNodes.remove();
+					writer.println(node.getKey() + " [shape=circle];");
+					
+					Node left = node.getLeft();
+					if(left != null) {
+						nextLevelNodes.add(left);
+						writer.println(node.getKey() + "->" + left.getKey());
+					}
+					else {
+						writer.println("null" + nullDotCount + " [shape=point];");
+						writer.println(node.getKey() + "->" + "null" + nullDotCount);
+						nullDotCount++;
+					}
+					
+					Node right = node.getRight();
+					if(right != null) {
+						nextLevelNodes.add(right);
+						writer.println(node.getKey() + "->" + right.getKey());
+					}
+					else {
+						writer.println("null" + nullDotCount + " [shape=point];");
+						writer.println(node.getKey() + "->" + "null" + nullDotCount);
+						nullDotCount++;
+					}
+				}
+				
+				//Prepare the next curLevelNodes array
+				curLevelNodes = (LinkedList<AVLTree<K>.Node>) nextLevelNodes.clone();
+			}
+			while (!nextLevelNodes.isEmpty());
+		}
+
+		writer.println("}");
+		writer.close();
 	}
 	
 	private Node rotateLeft(Node x) {
