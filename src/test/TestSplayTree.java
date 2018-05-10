@@ -17,8 +17,8 @@ public class TestSplayTree {
 		
 		assertEquals("()", splay.toString());
 		assertEquals(null, splay.find(4));
-		assertEquals(null, splay.getMin());
-		assertEquals(null, splay.getMax());
+		//assertEquals(null, splay.getMin());
+		//assertEquals(null, splay.getMax());
 		
 		splay.insert(4);
 		assertEquals("(4,(),())", splay.toString());
@@ -27,8 +27,10 @@ public class TestSplayTree {
 		assertEquals(null, splay.find(7));
 		assertEquals("(4,(),())", splay.toString());
 		
-		//assertEquals(new Integer(4), splay.getMin());
-		//assertEquals(new Integer(4), splay.getMax());
+		assertEquals(new Integer(4), splay.getMin());
+		assertEquals("(4,(),())", splay.toString());
+		assertEquals(new Integer(4), splay.getMax());
+		assertEquals("(4,(),())", splay.toString());
 		
 		splay.insert(7);
 		assertEquals("(7,(4,(),()),())", splay.toString());
@@ -38,9 +40,11 @@ public class TestSplayTree {
 		
 		assertEquals(new Integer(7), splay.find(7));
 		assertEquals("(7,(4,(),()),())", splay.toString());
-		
-		//assertEquals(new Integer(4), splay.getMin());
-		//assertEquals(new Integer(7), splay.getMax());
+	
+		assertEquals(new Integer(7), splay.getMax());
+		assertEquals("(7,(4,(),()),())", splay.toString());
+		assertEquals(new Integer(4), splay.getMin());
+		assertEquals("(4,(),(7,(),()))", splay.toString());
 		
 		splay.insert(7);
 		assertEquals("(7,(4,(),()),())", splay.toString());
@@ -50,40 +54,24 @@ public class TestSplayTree {
 		
 		assertEquals(new Integer(7), splay.find(7));
 		assertEquals("(7,(4,(),()),())", splay.toString());
-		
-		//assertEquals(new Integer(4), splay.getMin());
-		//assertEquals(new Integer(7), splay.getMax());
 		
 		splay.insert(10);
 		assertEquals("(10,(7,(4,(),()),()),())", splay.toString());
 		
-		SplayTree.Node n10 = splay.root;
-		SplayTree.Node n7 = n10.getLeft();
-		SplayTree.Node n4 = n7.getLeft();
-		
-		System.out.println("n10 = " + n10);
-		System.out.println("n7 = " + n7);
-		System.out.println("n4 = " + n4);
-		
-		System.out.println("n10 = " + n10);
-		System.out.println("n10 = " + n10);
-		System.out.println("n10 = " + n10);
-		
-		/*
 		splay.insert(6);
-		assertEquals("(6,(4,(),()),(10,(7,(),()),()))", splay.toString());
+		assertEquals("(6,(4,(),()),(7,(),(10,(),())))", splay.toString());
 		
 		splay.insert(2);
-		assertEquals("(2,(),(4,(),(6,(),(10,(7,(),()),()))))", splay.toString());
+		assertEquals("(2,(),(4,(),(6,(),(7,(),(10,(),())))))", splay.toString());
 		
 		splay.insert(5);
-		assertEquals("(5,(2,(),(4,(),())),(6,(),(10,(7,(),()),())))", splay.toString());
+		assertEquals("(5,(4,(2,(),()),()),(6,(),(7,(),(10,(),()))))", splay.toString());
 		
 		assertEquals(new Integer(6), splay.find(6));
-		assertEquals("(6,(5,(2,(),(4,(),()))),(10,(7,(),()),()))", splay.toString());
+		assertEquals("(6,(5,(4,(2,(),()),()),()),(7,(),(10,(),())))", splay.toString());
 		
 		assertEquals(new Integer(2), splay.find(2));
-		assertEquals("(2,(),(5,(4,(),()),(6,(),(10,(7,(),()),()))))", splay.toString());
+		assertEquals("(2,(),(5,(4,(),()),(6,(),(7,(),(10,(),())))))", splay.toString());
 		
 		assertEquals(new Integer(7), splay.find(7));
 		assertEquals("(7,(5,(2,(),(4,(),())),(6,(),())),(10,(),()))", splay.toString());
@@ -91,47 +79,27 @@ public class TestSplayTree {
 		assertEquals(null, splay.find(9));
 		assertEquals("(10,(7,(5,(2,(),(4,(),())),(6,(),())),()),())", splay.toString());
 		
-		//assertEquals(new Integer(2), splay.getMin());
-		//assertEquals(new Integer(10), splay.getMax());
+		assertEquals(new Integer(10), splay.getMax());
+		assertEquals("(10,(7,(5,(2,(),(4,(),())),(6,(),())),()),())", splay.toString());
 		
 		splay.dump("test.txt");
-		*/
-		/*
+
 		splay.remove(10);
-		assertEquals("(4,(2,(),()),(7,(6,(5,(),()),()),()))", splay.toString());
-		assertEquals(new Integer(6), splay.find(6));
-		assertEquals(new Integer(2), splay.find(2));
-		assertEquals(new Integer(7), splay.find(7));
+		assertEquals("(7,(5,(2,(),(4,(),())),(6,(),())),())", splay.toString());
 		
 		splay.remove(7);
-		assertEquals("(4,(2,(),()),(6,(5,(),()),()))", splay.toString());
-		assertEquals(new Integer(6), splay.find(6));
-		assertEquals(new Integer(2), splay.find(2));
+		assertEquals("(6,(5,(2,(),(4,(),())),()),())", splay.toString());
 		assertEquals(null, splay.find(7));
+		assertEquals("(6,(5,(2,(),(4,(),())),()),())", splay.toString());
 		
 		splay.remove(4);
-		assertEquals("(2,(),(6,(5,(),()),()))", splay.toString());
-		assertEquals(new Integer(6), splay.find(6));
-		assertEquals(null, splay.find(4));
-		assertEquals(null, splay.find(7));
-		assertEquals(new Integer(2), splay.getMin());
-		assertEquals(new Integer(6), splay.getMax());
+		assertEquals("(2,(),(5,(),(6,(),())))", splay.toString());
 		
 		splay.remove(2);
-		assertEquals("(6,(5,(),()),())", splay.toString());
-		assertEquals(new Integer(6), splay.find(6));
-		assertEquals(null, splay.find(4));
-		assertEquals(null, splay.find(7));
-		assertEquals(new Integer(5), splay.getMin());
-		assertEquals(new Integer(6), splay.getMax());
-		
+		assertEquals("(5,(),(6,(),()))", splay.toString());
+	
 		splay.remove(5);
 		assertEquals("(6,(),())", splay.toString());
-		assertEquals(new Integer(6), splay.find(6));
-		assertEquals(null, splay.find(4));
-		assertEquals(null, splay.find(7));
-		assertEquals(new Integer(6), splay.getMin());
-		assertEquals(new Integer(6), splay.getMax());
 		
 		splay.remove(6);
 		assertEquals("()", splay.toString());
@@ -140,6 +108,7 @@ public class TestSplayTree {
 		assertEquals(null, splay.find(7));
 		assertEquals(null, splay.getMin());
 		assertEquals(null, splay.getMax());
+		assertEquals("()", splay.toString());
 		
 		splay.remove(6);
 		assertEquals("()", splay.toString());
@@ -148,107 +117,108 @@ public class TestSplayTree {
 		assertEquals(null, splay.find(7));
 		assertEquals(null, splay.getMin());
 		assertEquals(null, splay.getMax());
-		*/
+		assertEquals("()", splay.toString());
 	}
 	
-	/*
 	@Test
 	public void testAscending() {
-		SimpleBST<Integer> bst = new SimpleBST<Integer>();
+		SplayTree<Integer> splay = new SplayTree<Integer>();
 		
-		bst.insert(1);
-		assertEquals("(1,(),())", bst.toString());
+		splay.insert(1);
+		assertEquals("(1,(),())", splay.toString());
 		
-		bst.insert(2);
-		assertEquals("(1,(),(2,(),()))", bst.toString());
+		splay.insert(2);
+		assertEquals("(2,(1,(),()),())", splay.toString());
 		
-		bst.insert(3);
-		assertEquals("(1,(),(2,(),(3,(),())))", bst.toString());
+		splay.insert(3);
+		assertEquals("(3,(2,(1,(),()),()),())", splay.toString());
 		
-		bst.insert(4);
-		assertEquals("(1,(),(2,(),(3,(),(4,(),()))))", bst.toString());
+		splay.insert(4);
+		assertEquals("(4,(3,(2,(1,(),()),()),()),())", splay.toString());
 		
-		bst.insert(5);
-		assertEquals("(1,(),(2,(),(3,(),(4,(),(5,(),())))))", bst.toString());
+		splay.insert(5);
+		assertEquals("(5,(4,(3,(2,(1,(),()),()),()),()),())", splay.toString());
 		
-		bst.insert(6);
-		assertEquals("(1,(),(2,(),(3,(),(4,(),(5,(),(6,(),()))))))", bst.toString());
+		splay.insert(6);
+		assertEquals("(6,(5,(4,(3,(2,(1,(),()),()),()),()),()),())", splay.toString());
 		
-		bst.insert(7);
-		assertEquals("(1,(),(2,(),(3,(),(4,(),(5,(),(6,(),(7,(),())))))))", bst.toString());
-		assertEquals(new Integer(1), bst.getMin());
-		assertEquals(new Integer(7), bst.getMax());
+		splay.insert(7);
+		assertEquals("(7,(6,(5,(4,(3,(2,(1,(),()),()),()),()),()),()),())", splay.toString());
+		assertEquals(new Integer(1), splay.getMin());
+		assertEquals("(1,(),(6,(4,(2,(),(3,(),())),(5,(),())),(7,(),())))", splay.toString());
+		assertEquals(new Integer(7), splay.getMax());
+		assertEquals("(7,(6,(1,(),(4,(2,(),(3,(),())),(5,(),()))),()),())", splay.toString());
 		
-		bst.remove(8);
-		assertEquals("(1,(),(2,(),(3,(),(4,(),(5,(),(6,(),(7,(),())))))))", bst.toString());
-		assertEquals(new Integer(1), bst.getMin());
-		assertEquals(new Integer(7), bst.getMax());
+		splay.remove(8);
+		assertEquals("(7,(6,(1,(),(4,(2,(),(3,(),())),(5,(),()))),()),())", splay.toString());
 		
-		bst.remove(6);
-		assertEquals("(1,(),(2,(),(3,(),(4,(),(5,(),(7,(),()))))))", bst.toString());
-		assertEquals(new Integer(1), bst.getMin());
-		assertEquals(new Integer(7), bst.getMax());
+		splay.remove(6);
+		assertEquals("(5,(4,(1,(),(2,(),(3,(),()))),()),(7,(),()))", splay.toString());
 		
-		System.out.println(bst.toString());
+		System.out.println(splay.toString());
 		
-		bst.dump("test.txt");
+		splay.dump("test.txt");
 	}
 	
 	@Test
 	public void testString() {
-		SimpleBST<String> bst = new SimpleBST<String>();
+		SplayTree<String> splay = new SplayTree<String>();
 		
-		assertEquals("()", bst.toString());
-		assertEquals(null, bst.find("goncalo"));
-		assertEquals(null, bst.getMin());
-		assertEquals(null, bst.getMax());
+		assertEquals("()", splay.toString());
+		assertEquals(null, splay.find("goncalo"));
+		assertEquals(null, splay.getMin());
+		assertEquals(null, splay.getMax());
 		
-		bst.insert("goncalo");
-		assertEquals("(goncalo,(),())", bst.toString());
-		assertEquals("goncalo", bst.find("goncalo"));
-		assertEquals(null, bst.find("matheus"));
-		assertEquals("goncalo", bst.getMin());
-		assertEquals("goncalo", bst.getMax());
+		splay.insert("goncalo");
+		assertEquals("(goncalo,(),())", splay.toString());
+		assertEquals("goncalo", splay.find("goncalo"));
+		assertEquals(null, splay.find("matheus"));
+		assertEquals("goncalo", splay.getMin());
+		assertEquals("goncalo", splay.getMax());
 		
-		bst.insert("pedro");
-		assertEquals("(goncalo,(),(pedro,(),()))", bst.toString());
-		assertEquals("goncalo", bst.find("goncalo"));
-		assertEquals("pedro", bst.find("pedro"));
-		assertEquals("goncalo", bst.getMin());
-		assertEquals("pedro", bst.getMax());
+		splay.insert("pedro");
+		assertEquals("(pedro,(goncalo,(),()),())", splay.toString());
+		assertEquals("goncalo", splay.find("goncalo"));
+		assertEquals("(goncalo,(),(pedro,(),()))", splay.toString());
+		assertEquals("pedro", splay.find("pedro"));
+		assertEquals("(pedro,(goncalo,(),()),())", splay.toString());
+		assertEquals("goncalo", splay.getMin());
+		assertEquals("(goncalo,(),(pedro,(),()))", splay.toString());
+		assertEquals("pedro", splay.getMax());
+		assertEquals("(pedro,(goncalo,(),()),())", splay.toString());
 		
-		bst.insert("matheus");
-		assertEquals("(goncalo,(),(pedro,(matheus,(),()),()))", bst.toString());
-		assertEquals("goncalo", bst.getMin());
-		assertEquals("pedro", bst.getMax());
+		splay.insert("matheus");
+		assertEquals("(matheus,(goncalo,(),()),(pedro,(),()))", splay.toString());
 
-		bst.remove("matheus");
-		assertEquals("(goncalo,(),(pedro,(),()))", bst.toString());
-		assertEquals("goncalo", bst.find("goncalo"));
-		assertEquals("pedro", bst.find("pedro"));
-		assertEquals(null, bst.find("matheus"));
+		splay.remove("matheus");
+		assertEquals("(goncalo,(),(pedro,(),()))", splay.toString());
+		assertEquals("goncalo", splay.find("goncalo"));
+		assertEquals("(goncalo,(),(pedro,(),()))", splay.toString());
+		assertEquals("pedro", splay.find("pedro"));
+		assertEquals("(pedro,(goncalo,(),()),())", splay.toString());
+		assertEquals(null, splay.find("matheus"));
+		assertEquals("(goncalo,(),(pedro,(),()))", splay.toString());
 		
-		bst.remove("pedro");
-		assertEquals("(goncalo,(),())", bst.toString());
-		assertEquals("goncalo", bst.find("goncalo"));
-		assertEquals(null, bst.find("matheus"));
-		assertEquals(null, bst.find("pedro"));
+		splay.remove("pedro");
+		assertEquals("(goncalo,(),())", splay.toString());
+		assertEquals("goncalo", splay.find("goncalo"));
+		assertEquals(null, splay.find("matheus"));
+		assertEquals(null, splay.find("pedro"));
 		
-		bst.remove("goncalo");
-		assertEquals("()", bst.toString());
-		assertEquals(null, bst.find("goncalo"));
-		assertEquals(null, bst.find("matheus"));
-		assertEquals(null, bst.find("pedro"));
+		splay.remove("goncalo");
+		assertEquals("()", splay.toString());
+		assertEquals(null, splay.find("goncalo"));
+		assertEquals(null, splay.find("matheus"));
+		assertEquals(null, splay.find("pedro"));
 		
-		bst.remove("goncalo");
-		assertEquals("()", bst.toString());
-		assertEquals(null, bst.find("goncalo"));
-		assertEquals(null, bst.find("matheus"));
-		assertEquals(null, bst.find("pedro"));
+		splay.remove("goncalo");
+		assertEquals("()", splay.toString());
+		assertEquals(null, splay.find("goncalo"));
+		assertEquals(null, splay.find("matheus"));
+		assertEquals(null, splay.find("pedro"));
 		
-		System.out.println(bst.toString());
+		System.out.println(splay.toString());
 		
-		bst.dump("test.txt");
+		splay.dump("test.txt");
 	}
-	*/
 }
