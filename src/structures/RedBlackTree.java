@@ -1,8 +1,5 @@
 package structures;
 
-// TODO refactore methods from tree to node
-// TODO assign of objets to other objects
-
 /**
  * A self-balanced binary search tree where each node has an extra bit and that
  * bit is interpreted as the color (red or black). These color bits are used to
@@ -39,6 +36,38 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			this.setRight(LEAF);
 		}
 
+		private boolean isLeftChild() {
+			Node parent = this.getParent();
+			if (parent.getLeft() == this)
+				return true;
+			return false;
+		}
+		
+		private Node getGrandparent() {
+			Node parent = this.getParent();
+			if (parent == null)
+				return null;
+			return parent.getParent();
+		}
+		
+		private Node getSibling() {
+			Node parent = this.getParent();
+			if (parent == null)
+				return null;
+
+			if (this == parent.getLeft())
+				return parent.getRight();
+			return parent.getLeft();
+		}
+		
+		private Node getUncle() {
+			Node parent = this.getParent();
+			Node grand = this.getGrandparent();
+			if (grand == null)
+				return null;
+			return parent.getSibling();
+		}
+		
 		public K getKey() {
 			return key;
 		}
@@ -276,33 +305,33 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 
 		if (node.getParent().getColor() == RED) {
-			if (uncle(node).color == BLACK) {
-				if (isLeftChild(node.getParent())) {
-					if (isLeftChild(node)) {
+			if (node.getUncle().color == BLACK) {
+				if (node.getParent().isLeftChild()) {
+					if (node.isLeftChild()) {
 						case1A(node);
 					} else {
 						case1B(node);
 					}
 				} else {
-					if (!isLeftChild(node)) {
+					if (!node.isLeftChild()) {
 						case1C(node);
 					} else {
 						case1D(node);
 					}
 				}
 			} else {
-				uncle(node).setColor(BLACK);
+				node.getUncle().setColor(BLACK);
 				node.getParent().setColor(BLACK);
-				grandparent(node).setColor(RED);
-				rebalanceOnInsert(grandparent(node));
+				node.getGrandparent().setColor(RED);
+				rebalanceOnInsert(node.getGrandparent());
 			}
 		}
 	}
 
 	private void case1A(Node node) {
-		grandparent(node).setColor(RED);
+		node.getGrandparent().setColor(RED);
 		node.getParent().setColor(BLACK);
-		rotateRightUpdating(grandparent(node));
+		rotateRightUpdating(node.getGrandparent());
 	}
 
 	private void case1B(Node node) {
@@ -311,9 +340,9 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	private void case1C(Node node) {
-		grandparent(node).setColor(RED);
+		node.getGrandparent().setColor(RED);
 		node.getParent().setColor(BLACK);
-		rotateLeftUpdating(grandparent(node));
+		rotateLeftUpdating(node.getGrandparent());
 	}
 
 	private void case1D(Node node) {
@@ -345,14 +374,14 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		} else if (v.getColor() == RED || u.getColor() == RED) {
 			u.setParent(v.getParent());
 			u.setColor(BLACK);
-			if (isLeftChild(v))
+			if (v.isLeftChild())
 				v.getParent().setLeft(u);
 			else
 				v.getParent().setRight(u);
 			v = null;
 		} else {
 			u.setParent(v.getParent());
-			if (isLeftChild(v))
+			if (v.isLeftChild())
 				v.getParent().setLeft(u);
 			else
 				v.getParent().setRight(u);
@@ -390,9 +419,9 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 		Node next = root;
 
-		if (isLeftChild(x)) {
+		if (x.isLeftChild()) {
 
-			Node w1 = sibling(x);
+			Node w1 = x.getSibling();
 
 			if (w1.getColor() == RED) {
 				x.getParent().setColor(RED);
@@ -400,7 +429,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 				rotateLeftUpdating(x.getParent());
 			}
 
-			Node w2 = sibling(x);
+			Node w2 = x.getSibling();
 
 			if (w2.getLeft().getColor() == BLACK && w2.getRight().getColor() == BLACK) {
 				w2.setColor(RED);
@@ -412,7 +441,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 					rotateRightUpdating(w2);
 				}
 
-				Node w3 = sibling(x);
+				Node w3 = x.getSibling();
 
 				w3.setColor(x.getParent().getColor());
 				x.getParent().setColor(BLACK);
@@ -421,7 +450,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 				next = root;
 			}
 		} else {
-			Node w1 = sibling(x);
+			Node w1 = x.getSibling();
 
 			if (w1.getColor() == RED) {
 				x.getParent().setColor(RED);
@@ -429,7 +458,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 				rotateRightUpdating(x.getParent());
 			}
 
-			Node w2 = sibling(x);
+			Node w2 = x.getSibling();
 			if (w2.getRight().getColor() == BLACK && w2.getLeft().getColor() == BLACK) {
 				w2.setColor(RED);
 				next = x.getParent();
@@ -440,7 +469,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 					rotateLeftUpdating(w2);
 				}
 
-				Node w3 = sibling(x);
+				Node w3 = x.getSibling();
 
 				w3.setColor(x.getParent().getColor());
 				x.getParent().setColor(BLACK);
@@ -451,38 +480,6 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 
 		deleteBlackBlack(next);
-	}
-
-	private boolean isLeftChild(Node node) {
-		Node parent = node.getParent();
-		if (parent.getLeft() == node)
-			return true;
-		return false;
-	}
-
-	private Node grandparent(Node node) {
-		Node parent = node.getParent();
-		if (parent == null)
-			return null;
-		return parent.getParent();
-	}
-
-	private Node sibling(Node node) {
-		Node parent = node.getParent();
-		if (parent == null)
-			return null;
-
-		if (node == parent.getLeft())
-			return parent.getRight();
-		return parent.getLeft();
-	}
-
-	private Node uncle(Node node) {
-		Node parent = node.getParent();
-		Node grand = grandparent(node);
-		if (grand == null)
-			return null;
-		return sibling(parent);
 	}
 
 	private Node rotateLeft(Node x) {
@@ -523,7 +520,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		if (tmp == null) {
 			root = rotateRight(node);
 		} else {
-			if (isLeftChild(node)) {
+			if (node.isLeftChild()) {
 				tmp.setLeft(rotateRight(node));
 			} else {
 				tmp.setRight(rotateRight(node));
@@ -536,7 +533,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		if (tmp == null) {
 			root = rotateLeft(node);
 		} else {
-			if (isLeftChild(node)) {
+			if (node.isLeftChild()) {
 				tmp.setLeft(rotateLeft(node));
 			} else {
 				tmp.setRight(rotateLeft(node));
