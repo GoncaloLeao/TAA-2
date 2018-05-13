@@ -14,7 +14,7 @@ import structures.*;
 public class TimeTests {	 
 	public final static boolean TO_FILE = true;
 	
-	public static int inputFormat = 0;
+	public static int inputFormat = 2;
 	public static int numberTests = 10;
 	public static int step = 5000;
 	public static int samples = 3;
@@ -26,6 +26,7 @@ public class TimeTests {
 	public static ArrayList<ArrayList<Long>> treapResult;
 	public static ArrayList<ArrayList<Long>> splayResult;
 	public static ArrayList<ArrayList<Long>> listResult;
+	public static ArrayList<ArrayList<Long>> scapeResult;
 	
 	public static void main(String[] args) {
 		
@@ -59,6 +60,7 @@ public class TimeTests {
 		Treap<Integer> treap = new Treap<>();
 		SplayTree<Integer> splay = new SplayTree<>();
 		SkipList<Integer> list = new SkipList<>();
+		//ScapegoatTree<Integer> scape = new ScapegoatTree<>(0.5);
 		
 		bstResult = benchmark.timeTest(bst, inputFormat);
 		avlResult = benchmark.timeTest(avl, inputFormat);
@@ -66,6 +68,7 @@ public class TimeTests {
 		treapResult = benchmark.timeTest(treap, inputFormat);
 		splayResult = benchmark.timeTest(splay, inputFormat);
 		listResult = benchmark.timeTest(list, inputFormat);
+		//scapeResult = benchmark.timeTest(scape, inputFormat);
 	
 		for (int i = 0; i < 5; i++) toPrint(i);
 	}
@@ -82,7 +85,7 @@ public class TimeTests {
 			file = "Insert";
 			break;
 		case 2:
-			file = "Delete";
+			file = "Remove";
 			break;
 		case 3:
 			file = "Max";
@@ -101,6 +104,7 @@ public class TimeTests {
 		labels.add("Treap");
 		labels.add("SplayTree");
 		labels.add("SkipList");
+		//labels.add("ScapegoatTree");		
 		
 		Print2CSV export = new Print2CSV(dir, file+".csv");
 		ArrayList<ArrayList<Long>> data = new ArrayList<>();
@@ -110,6 +114,8 @@ public class TimeTests {
 		data.add(treapResult.get(op));
 		data.add(splayResult.get(op));
 		data.add(listResult.get(op));
+		//data.add(scapeResult.get(op));
+		
 		export.data2CSVFormat(labels, data, step, TO_FILE);
 	}
 }

@@ -123,7 +123,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	private Node find(Node node, K key) {
-		if (node.getKey() == null)
+		if (node.getKey() == null || node == LEAF || node == DBLACK)
 			return null;
 		else if (key.compareTo(node.getKey()) < 0)
 			return find(node.getLeft(), key);
@@ -431,7 +431,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 			Node w2 = x.getSibling();
 
-			if (w2.getLeft().getColor() == BLACK && w2.getRight().getColor() == BLACK) {
+			if (w2 != null && w2.getLeft().getColor() == BLACK && w2.getRight().getColor() == BLACK) {
 				w2.setColor(RED);
 				next = x.getParent();
 			} else {
@@ -459,7 +459,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			}
 
 			Node w2 = x.getSibling();
-			if (w2.getRight().getColor() == BLACK && w2.getLeft().getColor() == BLACK) {
+			if (w2 != null && w2.getRight().getColor() == BLACK && w2.getLeft().getColor() == BLACK) {
 				w2.setColor(RED);
 				next = x.getParent();
 			} else {

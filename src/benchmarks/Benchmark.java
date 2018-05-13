@@ -40,6 +40,9 @@ public class Benchmark {
 	 * 
 	 * @param set
 	 *            - to be tested
+	 * @param inputFormat
+	 * 			  - of the elements to be inserted. 0 for ascending, 1 for uniform and 2 for Gaussian.           
+	 *            
 	 * @return - The result for the tests INSERT, REMOVE, MAX and MIN.
 	 * @throws NotEmptySetException
 	 *             - if the set is not empty
@@ -51,7 +54,9 @@ public class Benchmark {
 		ArrayList<ArrayList<Long>> results = initializeArray();
 
 		for (int j = 0; j < numberTests; j++) {
+			System.out.println("Testing: "+j);
 			for (int i = 0; i < numberSamples; i++) {
+				System.out.println("\tSample: "+i);
 				Long cont = 0L, start;
 				TreeSet<Integer> auxSet = new TreeSet<>();
 				ArrayList<Integer> auxArray = new ArrayList<>();
@@ -62,9 +67,9 @@ public class Benchmark {
 					if (inputFormat == 0) {
 						newElement = k;
 					} else if (inputFormat == 1) {
-						newElement = RAND.nextInt(MAX_RAND);
-					} else {
 						newElement = (int) (RAND.nextGaussian()*MAX_RAND);
+					} else {
+						newElement = RAND.nextInt(MAX_RAND);
 					}
 					
 					auxSet.add(newElement);
@@ -107,6 +112,7 @@ public class Benchmark {
 					incrementValue(results, j, Type.REMOVE, cont);
 				}
 			}
+			System.out.println();
 		}
 
 		for (int i = 0; i < results.size(); i++) {
