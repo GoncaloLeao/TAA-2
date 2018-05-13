@@ -3,52 +3,48 @@ package structures;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Stack;
 
-public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
+public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	public class Node {
     	private K key;
     	private Node left;
     	private Node right;
-    	private int height;
     	 
     	protected Node(K key) {
     		this.key = key;
-    		this.height = 1;
     	}
     	
     	public K getKey() { return key; }
     	public Node getLeft() { return left; }
     	public Node getRight() { return right; }
-    	public int getBalance() { 
-    		if(left != null) {
-    			if(right != null) return left.height - right.height;
-    			else return left.height;
-    		}
-    		else {
-    			if(right != null) return -right.height;
-    			else return 0;
-    		}
+    	public boolean isLeaf() {
+    		return left == null && right == null;
     	}
-    	public int getHeight() { return height; }
     	
     	public void setKey(K key) { this.key = key; }
     	public void setLeft(Node left) { this.left = left; }
     	public void setRight(Node right) { this.right = right; }
-    	public void updateHeight() {
-    		if(left != null) {
-    			if(right != null) this.height = 1 + Math.max(left.getHeight(), right.getHeight());
-    			else this.height = 1 + left.getHeight();
-    		}
-    		else {
-    			if(right != null) this.height = 1 + right.getHeight();
-    			else this.height = 1;
-    		}
-    	}
     }
 	
 	private Node root;
+	private final double ALPHA;
+    private int size; //number of nodes in the tree
+    private int maxSize; //maximal value of size since the last time the tree was completely rebuilt. 
+	
+    public ScapegoatTree(double alpha) {
+    	//Check if the value for alpha is not valid
+    	if(alpha < 0.5 || alpha >= 1) {
+    		throw new IllegalArgumentException("Alpha must be in the range [0.5,1[, but was " + alpha + ".");
+    	}
+    	
+    	this.ALPHA = alpha;
+    	this.size = 0;
+    	this.maxSize = 0;
+    }
     
 	/**
 	 * The implementation is the same as SimpleBST.
@@ -73,39 +69,90 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public void insert(K key) {
-		root = insert(root, key);
+		root = insert(root, key).node;		
+	}
+	
+	private class InsertResult {
+		public Node node;
+		public int nodeSize;
+		public int nodeHeight;
+		
+		public InsertResult(Node node, int nodeSize, int nodeHeight) {
+			this.node = node;
+			this.nodeSize = nodeSize;
+			this.nodeHeight = nodeHeight;
+		}
 	}
 
-    private Node insert(Node node, K key) { 
+    private InsertResult insert(Node node, K key) { 
     	//Node is empty
-    	if (node == null) return new Node(key);
+    	if (node == null) {
+    		this.size++;
+    		if(this.size > this.maxSize) this.maxSize = this.size;
+    		return new InsertResult(new Node(key), 1, 0);
+    	}
     	//Add to the left subtree
-    	else if (key.compareTo(node.getKey()) < 0) node.setLeft(insert(node.getLeft(), key));
-    	//Add to the right subtree
-    	else if (key.compareTo(node.getKey()) > 0) node.setRight(insert(node.getRight(), key));
-    	//Tree has the key on its root
-    	else return node;
+    	else if (key.compareTo(node.getKey()) < 0) {
+    		InsertResult result = insert(node.getLeft(), key);
+    		node.setLeft(result.node);
     		
-    	node.updateHeight();
-    	
-    	//Rebalance if needed
-    	return rebalance(node);
+    		int height = 1 + result.nodeHeight;
+    		int size = 1 + result.nodeSize + getSize(node.getRight());
+    		//Check if the node is a scapegoat
+    		if(height > hAlpha(size)) {
+    			//Rebuild the tree
+    			node = rebuildTree(node);
+    		}
+    		return new InsertResult(node, size, height); 
+    	}
+    	//Add to the right subtree
+    	else if (key.compareTo(node.getKey()) > 0) {
+    		InsertResult result = insert(node.getRight(), key);
+    		node.setRight(result.node);
+    		
+    		int height = 1 + result.nodeHeight;
+    		int size = 1 + result.nodeSize + getSize(node.getLeft());
+    		//Check if the node is a scapegoat
+    		if(height > hAlpha(size)) {
+    			//Rebuild the tree
+    			node = rebuildTree(node);
+    			//TODO: update maxSize?
+    			//TODO: prevent rebuildTree from being called twice for the insert of a same key
+    		}
+    		return new InsertResult(node, size, height); 
+    	}
+    	//Tree has the key on its root
+    	else return new InsertResult(node, 1, 0);
     }
 
 	@Override
 	public void remove(K key) {
 		root = remove(root, key);
+		
+		if(this.size < this.ALPHA * this.maxSize) {
+			//Rebuid the whole tree
+			root = rebuildTree(root);
+			//Set maxSize to size 
+			this.maxSize = this.size;
+		}
 	}
 	
 	private Node remove(Node node, K key) {
-		//Node is empty
+    	//Node is empty
     	if (node == null) return null;
     	//Delete on the left subtree
-    	else if (key.compareTo(node.getKey()) < 0) node.setLeft(remove(node.getLeft(), key));
+    	else if (key.compareTo(node.getKey()) < 0) {
+    		node.setLeft(remove(node.getLeft(), key));
+    		return node;
+    	}
     	//Delete on the right subtree
-        else if (key.compareTo(node.getKey()) > 0) node.setRight(remove(node.getRight(), key));
+        else if (key.compareTo(node.getKey()) > 0) {
+        	node.setRight(remove(node.getRight(), key));
+        	return node;
+        }
     	//Tree has the key on its root
     	else {
+    		this.size--;
     		//The current node is a leaf (0 children).
     		if (node.getLeft() == null && node.getRight() == null) return null;
     		//The current node only has a right child
@@ -121,46 +168,10 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
     			Node largestLeftNode = getMax(node.getLeft());
     			node.setKey(largestLeftNode.getKey());
     			node.setLeft(remove(node.getLeft(), largestLeftNode.getKey()));
+    			return node;
     		}
         }
-    		
-    	node.updateHeight();
-    	
-    	//Rebalance if needed
-    	return rebalance(node);
-	}
-	
-	private Node rebalance(Node node) {
-		int balance = node.getBalance();
-        if (balance > 1) {
-        	Node child = node.getLeft();
-        	int childBalance = child.getBalance();
-        	//Left Left Case
-        	if(childBalance >= 0) {
-        		return rotateRight(node);
-        	}
-        	//Left Right Case
-        	else {
-        		node.setLeft(rotateLeft(node.getLeft()));
-                return rotateRight(node);
-        	}
-        }
-        else if (balance < -1) {
-        	Node child = node.getRight();
-        	int childBalance = child.getBalance();
-        	//Right Right Case
-        	if(childBalance <= 0) {
-        		return rotateLeft(node);
-        	}
-        	//Right Left Case
-        	else {
-        		node.setRight(rotateRight(node.getRight()));
-                return rotateLeft(node);
-        	}
-        }
-        //Node is balanced
-        else return node;
-	}
+    }
 
 	/**
 	 * The implementation is the same as SimpleBST.
@@ -200,6 +211,60 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
     	else return getMax(node.getRight());
     }
 	
+	public int getSize() {
+		return getSize(root);
+	}
+	
+	private int getSize(Node node) {
+		//Node is empty
+    	if(node == null) return 0;
+    	//Node is not empty
+    	else return 1 + getSize(node.getLeft()) + getSize(node.getRight());
+	}
+	
+	private int hAlpha(int n) {
+		return (int)Math.floor(-Math.log(n)/Math.log(this.ALPHA));
+	}
+	
+	private Node rebuildTree(Node node) {
+		//Retrieve the subtree's list of nodes in order
+		ArrayList<Node> list = flatten(node);
+		return buildTree(list, 0, list.size() - 1);
+	}
+	
+	private ArrayList<Node> flatten(Node node) {
+		ArrayList<Node> list = new ArrayList<Node>();
+		if(node != null) {
+			Node curNode = node; //next node whose left subtree must be explored first
+			Stack<Node> stack = new Stack<Node>(); //nodes whose left (but not right) subtree has been explored, and not included in the list yet
+			while(curNode != null || !stack.empty()) {
+				//Check if we need explore a left subtree first
+				if(curNode != null) {
+					stack.push(curNode);
+					curNode = curNode.getLeft();
+				}
+				//Check if there we need to add a node to the list and explore its right subtree
+				else if (!stack.empty()){
+					list.add(stack.pop());
+					curNode = list.get(list.size() - 1).getRight();
+				}
+			}
+		}
+		
+		return list;
+	}
+	
+	private Node buildTree(ArrayList<Node> list, int start, int end) {
+		if(start <= end) {
+			int middle = (start + end) / 2;
+			Node node = list.get(middle);
+			node.setLeft(buildTree(list, start, middle - 1));
+			node.setRight(buildTree(list, middle + 1, end));
+			return node;
+		}
+		else return null;
+	}
+	
 	@Override
 	public String toString() { 
 		return toString(root);
@@ -211,7 +276,6 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
     	stringBuilder.append("(");
     	//Print the root
     	if(node != null) {
-    		stringBuilder.append("[" + node.getHeight() + "]");
     		stringBuilder.append(node.getKey() + ",");
     		//Print the left subtree
     		stringBuilder.append(toString(node.getLeft()));
@@ -282,7 +346,7 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 				}
 				
 				//Prepare the next curLevelNodes array
-				curLevelNodes = (LinkedList<AVLTree<K>.Node>) nextLevelNodes.clone();
+				curLevelNodes = (LinkedList<ScapegoatTree<K>.Node>) nextLevelNodes.clone();
 			}
 			while (!nextLevelNodes.isEmpty());
 		}
@@ -290,32 +354,4 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 		writer.println("}");
 		writer.close();
 	}
-	
-	private Node rotateLeft(Node x) {
-        Node y = x.getRight();
-        if(y == null) return x;
-        Node z = y.getLeft();
-        
-        y.setLeft(x);
-        x.setRight(z);
-        
-        x.updateHeight();
-        y.updateHeight();
-
-        return y;
-    }
-    
-	private Node rotateRight(Node x) {
-        Node y = x.getLeft();
-        if(y == null) return x;
-        Node z = y.getRight();
-        
-        y.setRight(x);
-        x.setLeft(z);
-        
-        x.updateHeight();
-        y.updateHeight();
-
-        return y;
-    }
 }

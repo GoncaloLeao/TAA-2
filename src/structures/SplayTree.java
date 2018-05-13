@@ -1,107 +1,298 @@
 package structures;
 
-/*public class SplayTree<K extends Comparable<K> ,V> extends BST<K,V> {
-    @Override
-    protected Node find(Node node, K key) {
-    	//Node is empty
-    	if(node == null) return null;
-    	//Tree has the key on its root
-    	else if (key.equals(node.getKey())) return node;
-    	//Search the left subtree
-    	else if (key.compareTo(node.getKey()) < 0) {
-    		//Key is not in the tree
-    		if(root.getLeft() == null) return null;
-    		// Zig-Zig (Left Left)
-    		else if(key < root.getLeft().getKey()) {
-    			root.setLeft(root.getLeft());
-    		}
-    		
-    		return find(node.getLeft(), key);
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.LinkedList;
+
+public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
+	
+	public class Node {
+    	private K key;
+    	private Node left;
+    	private Node right;
+    
+    	protected Node(K key) {
+    		this.key = key;
     	}
-        //Search the right subtree
-        else return find(node.getRight(), key);
+    	
+    	public K getKey() { return key; }
+    	public Node getLeft() { return left; }
+    	public Node getRight() { return right; }
+    	
+    	public void setKey(K key) { this.key = key; }
+    	public void setLeft(Node left) { this.left = left; }
+    	public void setRight(Node right) { this.right = right; }
     }
 	
-    @Override
-    protected Node insert(Node node, K key, V value) { 
-    	//Node is empty
-    	if (node == null) return new Node(key,value);
+	public class NodePair {
+		private Node first;
+		private Node second;
+		
+		public NodePair(Node first, Node second) {
+			this.first = first;
+			this.second = second;
+		}
+		
+		public Node getFirst() { return first; }
+		public Node getSecond() { return second; }
+	}
+	
+	public Node root;
+   
+	@Override
+	public K find(K key) {
+		if(root == null) return null;
+		else {
+			Node found = find(root, key);
+			splay(found.getKey());
+			if(root.getKey() == key) return root.getKey();
+			else return null;
+		}
+	}
+	
+	protected Node find(Node node, K key) {
+    	//Search the left subtree
+    	if (key.compareTo(node.getKey()) < 0) {
+    		Node left = node.getLeft();
+    		if(left == null) return node;
+    		else return find(left, key);
+    	}
+    	//Search the right subtree
+    	else if (key.compareTo(node.getKey()) > 0) {
+    		Node right = node.getRight();
+    		if(right == null) return node;
+    		return find(right, key);
+    	}
     	//Tree has the key on its root
-        else if (key.equals(node.getKey())) {
-        	node.setValue(value);
-        	return node;
-        }
-    	//Add to the left subtree
-    	else if (key.compareTo(node.getKey()) < 0) node.setLeft(insert(node.getLeft(), key, value));
-    	//Add to the right subtree
-    	else node.setRight(insert(node.getRight(), key, value));
-    	
-    	node.updateHeight();
-    	
-    	int balance = balance(node);
-    	
-    	//Left Left Case
-        if (balance > 1 && key.compareTo(node.getLeft().getKey()) < 0) return rotateRight(node);
-        //Right Right Case
-        else if (balance < -1 && key.compareTo(node.getRight().getKey()) > 0) return rotateLeft(node);
-        //Left Right Case
-        else if (balance > 1 && key.compareTo(node.getLeft().getKey()) > 0) {
-            node.setLeft(rotateLeft(node.getLeft()));
-            return rotateRight(node);
-        }
-        //Right Left Case
-        else if (balance < -1 && key.compareTo(node.getRight().getKey()) < 0) {
-            node.setRight(rotateRight(node.getRight()));
-            return rotateLeft(node);
-        }
-        //Node is balanced
-        else return node;
+    	else return node;
+    }
+	
+	@Override
+	public void insert(K key) {
+		NodePair pair = insert(root, key);
+		root = pair.getFirst();
+		splay(pair.getSecond().getKey());
+	}
+
+    private NodePair insert(Node node, K key) { 
+    	// Node is empty
+    	if(node == null) {
+    		Node newNode = new Node(key);
+    		return new NodePair(newNode, newNode);
+    	}
+    	// Add to the left subtree
+    	else if (key.compareTo(node.getKey()) < 0) {
+    		NodePair pair = insert(node.getLeft(), key);
+    		node.setLeft(pair.getFirst());
+    		return new NodePair(node, pair.getSecond());
+    	}
+    	// Add to the right subtree
+    	else if (key.compareTo(node.getKey()) > 0) {
+    		NodePair pair = insert(node.getRight(), key);
+    		node.setRight(pair.getFirst());
+    		return new NodePair(node, pair.getSecond());
+    	}
+    	// Tree has the key on its root
+    	else return new NodePair(node, node);
+    }
+
+	@Override
+	public void remove(K key) {
+		if(root != null) {
+			//Splay the node to deelete to the root
+			splay(key);
+			//Check if the tree truly contains the node to remove
+			if(root.getKey() == key) {
+				if(root.left == null) {
+					root = root.right;
+				}
+				else {
+					Node right = root.getRight();
+					root = root.getLeft();
+					//Splay the maximum node of the left subtree
+					splay(key); 
+					//This works since the left subtree does not contain key
+					//and all of its nodes are strictly less than key 
+					root.setRight(right);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public K getMin() {
+		if(root == null) return null;
+		else {
+			Node min = root;
+			while(min.getLeft() != null) min = min.getLeft();
+			splay(min.getKey());
+			return min.getKey();
+		}
+	}
+
+	@Override
+	public K getMax() {
+		if(root == null) return null;
+		else {
+			Node max = root;
+			while(max.getRight() != null) max = max.getRight();
+			splay(max.getKey());
+			return max.getKey();
+		}
+	}
+	
+	@Override
+	public String toString() { 
+		return toString(root);
     }
     
-    @Override
-    protected Node delete(Node node, K key) {
-    	//Node is empty
-    	if (node == null) return null;
-    	//Tree has the key on its root
-    	else if (key.equals(node.getKey())) {
-    		//The current node is a leaf (0 children).
-    		if (node.getLeft() == null && node.getRight() == null) return null;
-    		//The current node only has a right child
-    		else if (node.getLeft() == null) node = node.getRight();
-    		//The current node only has a left child
-    		else if (node.getRight() == null) node = node.getLeft();
-    		//The current node has two children
-    		else {
-    			Node smallestRightNode = (BST<K, V>.Node) getMin();
-    			node.setKey(smallestRightNode.getKey());
-    			node.setValue(smallestRightNode.getValue());
-    			node.setRight(delete(node.getRight(), smallestRightNode.getKey()));
-    		}
-        }
-    	//Delete on the left subtree
-    	else if (key.compareTo(node.getKey()) < 0) node.setLeft(delete(node.getLeft(), key));
-    	//Delete on the right subtree
-        else node.setRight(delete(node.getRight(), key));
-    	
-    	node.updateHeight();
-    	
-    	int balance = balance(node);
-    	
-    	//Left Left Case
-        if (balance > 1 && balance(root.getLeft()) >= 0) return rotateRight(node);
-        //Right Right Case
-        else if (balance < -1 && balance(root.getRight()) <= 0) return rotateLeft(node);
-        //Left Right Case
-        else if (balance > 1 && balance(root.getLeft()) < 0) {
-            node.setLeft(rotateLeft(node.getLeft()));
-            return rotateRight(node);
-        }
-        //Right Left Case
-        else if (balance < -1 && balance(root.getRight()) > 0) {
-            node.setRight(rotateRight(node.getRight()));
-            return rotateLeft(node);
-        }
-        //Node is balanced
-        else return node;
+    // print the values in this BST in pre-order (to p)
+    protected String toString(Node node) {
+    	StringBuilder stringBuilder = new StringBuilder();
+    	stringBuilder.append("(");
+    	//Print the root
+    	if(node != null) {
+    		stringBuilder.append(node.getKey() + ",");
+    		//Print the left subtree
+    		stringBuilder.append(toString(node.getLeft()));
+        	stringBuilder.append(",");
+            //Print the right subtree
+        	stringBuilder.append(toString(node.getRight()));
+    	}
+    	stringBuilder.append(")");
+        
+        return stringBuilder.toString();
     }
-}*/
+
+    @SuppressWarnings("unchecked")
+	@Override
+	public void dump(String filename) {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(new FileOutputStream(filename, false));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("The specified file " + filename + " does not exist.");
+		}
+
+		writer.println("digraph {");
+
+		// Dump all the nodes
+		LinkedList<Node> curLevelNodes = new LinkedList<Node>();
+		LinkedList<Node> nextLevelNodes = new LinkedList<Node>();
+		int nullDotCount = 0;
+		
+		if(root != null) {
+			curLevelNodes.add(root);
+			do {
+				nextLevelNodes.clear();
+				
+				//Draw the current level's nodes
+				writer.print(" { rank=same; ");
+				for(int i = 0; i < curLevelNodes.size(); i++) {
+					Node node = curLevelNodes.get(i);
+					writer.print(node.getKey() + "; ");
+				}
+				writer.println("}");
+				
+				while(!curLevelNodes.isEmpty()) {
+					Node node = curLevelNodes.remove();
+					writer.println(node.getKey() + " [shape=circle];");
+					
+					Node left = node.getLeft();
+					if(left != null) {
+						nextLevelNodes.add(left);
+						writer.println(node.getKey() + "->" + left.getKey());
+					}
+					else {
+						writer.println("null" + nullDotCount + " [shape=point];");
+						writer.println(node.getKey() + "->" + "null" + nullDotCount);
+						nullDotCount++;
+					}
+					
+					Node right = node.getRight();
+					if(right != null) {
+						nextLevelNodes.add(right);
+						writer.println(node.getKey() + "->" + right.getKey());
+					}
+					else {
+						writer.println("null" + nullDotCount + " [shape=point];");
+						writer.println(node.getKey() + "->" + "null" + nullDotCount);
+						nullDotCount++;
+					}
+				}
+				
+				//Prepare the next curLevelNodes array
+				curLevelNodes = (LinkedList<SplayTree<K>.Node>) nextLevelNodes.clone();
+			}
+			while (!nextLevelNodes.isEmpty());
+		}
+
+		writer.println("}");
+		writer.close();
+	}
+
+	private Node rotateLeft(Node x) {
+        Node y = x.getRight();
+        if(y == null) return x;
+        Node z = y.getLeft();
+        
+        y.setLeft(x);
+        x.setRight(z);
+
+        return y;
+    }
+    
+	private Node rotateRight(Node x) {
+        Node y = x.getLeft();
+        if(y == null) return x;
+        Node z = y.getRight();
+        
+        y.setRight(x);
+        x.setLeft(z);
+
+        return y;
+    }
+	
+	private void splay(K key) {
+		Node header = new Node(null); //tree whose left and right subtrees will then be used for the reassembling
+		Node l = header; //maximum node on the left side of header
+		Node r = header; //mininum node on the right side of header
+		Node x = root; //current node being processed
+		while(true) {
+			if(key.compareTo(x.getKey()) < 0) {
+				Node y = x.getLeft();
+				if(y == null) break;
+				//Check if we have the zig-zig case (if not, it is just a simple rotation, zig)
+				if(key.compareTo(y.getKey()) < 0) {
+					x = rotateRight(x);
+					y = x.getLeft();
+					if(y == null) break;
+				}
+				r.setLeft(x);
+				r = x;
+				x = x.getLeft();
+			}
+			else if(key.compareTo(x.getKey()) > 0) {
+				Node y = x.getRight();
+				if(y == null) break;
+				//Check if we have the zag-zag case (if not, it is just a simple rotation, zag)
+				if(key.compareTo(y.getKey()) > 0) {
+					x = rotateLeft(x);
+					y = x.getRight();
+					if(y == null) break;
+				}
+				l.setRight(x);
+				l = x;
+				x = x.getRight();
+			}
+			else break;
+		}
+		//Reassemble the tree
+		l.setRight(x.getLeft());
+		r.setLeft(x.getRight());
+		x.setLeft(header.getRight());
+		x.setRight(header.getLeft());
+		root = x;
+	}
+}

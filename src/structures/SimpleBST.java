@@ -230,5 +230,5 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 		writer.println("}");
 		writer.close();
 	}
-
+	
 }
