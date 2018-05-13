@@ -22,10 +22,10 @@ public class TimeTests {
 		Treap<Integer> treap = new Treap<>();
 		SkipList<Integer> list = new SkipList<>();
 		
-		ArrayList<ArrayList<Long>> avlResult = benchmark.timeTest(avl);
-		ArrayList<ArrayList<Long>> redBlackResult = benchmark.timeTest(redBlack);
-		ArrayList<ArrayList<Long>> treapResult = benchmark.timeTest(treap);
-		ArrayList<ArrayList<Long>> listResult = benchmark.timeTest(list);
+		ArrayList<ArrayList<Long>> avlResult = benchmark.timeRandomTest(avl);
+		ArrayList<ArrayList<Long>> redBlackResult = benchmark.timeRandomTest(redBlack);
+		ArrayList<ArrayList<Long>> treapResult = benchmark.timeRandomTest(treap);
+		ArrayList<ArrayList<Long>> listResult = benchmark.timeRandomTest(list);
 
 		ArrayList<String> labels = new ArrayList<>();
 		labels.add("AVLTree");

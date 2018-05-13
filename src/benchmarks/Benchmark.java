@@ -15,7 +15,7 @@ import structures.DynamicSet;
  */
 public class Benchmark {
 
-	private final Random RAND = new Random();
+	private final Random RAND;
 	private final int MAX_RAND = 100000000;
 	private final int TESTS = 5;
 
@@ -31,6 +31,7 @@ public class Benchmark {
 		this.numberTests = numberTests;
 		this.stepSize = stepSize;
 		this.numberSamples = numberSamples;
+		RAND = new Random(System.currentTimeMillis());
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class Benchmark {
 	 * @throws NotEmptySetException
 	 *             - if the set is not empty
 	 */
-	public ArrayList<ArrayList<Long>> timeTest(DynamicSet<Integer> set) throws NotEmptySetException {
+	public ArrayList<ArrayList<Long>> timeRandomTest(DynamicSet<Integer> set) throws NotEmptySetException {
 		if (set.getMin() != null)
 			throw new NotEmptySetException();
 

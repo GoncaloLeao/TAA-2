@@ -1,6 +1,7 @@
 package structures;
 
-import structures.SimpleBST.Node;
+// TODO refactore methods from tree to node
+// TODO assign of objets to other objects
 
 /**
  * A self-balanced binary search tree where each node has an extra bit and that
@@ -19,6 +20,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	private final Node DBLACK = new Node(null, BLACK, null);
 
 	private Node root;
+	// replace to u
 	private Node tmpNewNode;
 	private Node u, v;
 
@@ -109,7 +111,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 		} else if (find(key) == null) {
 			root = insert(root, key, root);
 			// tmpNewNode is a global node to store the last insertion
-			checkInvariant(tmpNewNode);
+			rebalanceOnInsert(tmpNewNode);
 		}
 	}
 
@@ -127,7 +129,8 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	@Override
 	public void remove(K key) {
 		if (remove(root, key) != null) {
-			deleteProcess(v, u);
+			// mathods names (to change)
+			rebalanceOnDelete();
 		}
 	}
 
@@ -264,7 +267,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	 * @param node
 	 *            - that was inserted or the node from the new call
 	 */
-	private void checkInvariant(Node node) {
+	private void rebalanceOnInsert(Node node) {
 		if (node == null)
 			return;
 		if (node == root) {
@@ -291,7 +294,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 				uncle(node).setColor(BLACK);
 				node.getParent().setColor(BLACK);
 				grandparent(node).setColor(RED);
-				checkInvariant(grandparent(node));
+				rebalanceOnInsert(grandparent(node));
 			}
 		}
 	}
@@ -335,7 +338,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	 * @param u
 	 *            - to replace v
 	 */
-	private void deleteProcess(Node v, Node u) {
+	private void rebalanceOnDelete() {
 		if (v == root) {
 			u.setColor(BLACK);
 			root = u;
