@@ -1,17 +1,17 @@
-/*package test;
+package test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import structures.Treap;
 
@@ -23,13 +23,13 @@ public class TestTreap {
 	Treap<Integer> treap;
 	TreeSet<Integer> set;
 	
-	@BeforeAll
+	@BeforeClass
 	public static void setUp() {
 		nElements = 8192;
 		maxRand = 10000;
 	}
 	
-	@BeforeEach
+	@Before
 	public void setUpTest() {
 		treap = new Treap<Integer>();
 		rand = new Random();
@@ -134,4 +134,3 @@ public class TestTreap {
 		}
 	}
 }
-*/
