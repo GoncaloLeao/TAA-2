@@ -119,6 +119,7 @@ public class Benchmark {
 	}
 
 	private void incrementValue(ArrayList<ArrayList<Long>> target, int caseTest, Type operation, Long value) {
+		
 		switch (operation) {
 		case FIND:
 			target.get(0).set(caseTest, target.get(0).get(caseTest) + value);

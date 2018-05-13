@@ -14,11 +14,11 @@ import structures.*;
 public class TimeTests {	 
 	public final static boolean TO_FILE = true;
 	
-	public static int inputFormat = 2;
-	public static int numberTests = 5;
-	public static int step = 1000;
-	public static int samples = 2;
-	public static String fileName = "UniformInput";
+	public static int inputFormat = 0;
+	public static int numberTests = 10;
+	public static int step = 5000;
+	public static int samples = 3;
+	public static String directoryName = "UniformInput";
 	
 	public static ArrayList<ArrayList<Long>> bstResult;
 	public static ArrayList<ArrayList<Long>> avlResult;
@@ -46,9 +46,9 @@ public class TimeTests {
 		} 
 		
 		if (inputFormat == 0) {
-			fileName = "ascendingInput";
+			directoryName = "ascendingInput";
 		} else if (inputFormat == 1) {
-			fileName = "gaussianInput";
+			directoryName = "gaussianInput";
 		}
 		
 		Benchmark benchmark = new Benchmark(numberTests, step, samples);
@@ -71,23 +71,24 @@ public class TimeTests {
 	}
 	
 	public static void toPrint(int op) {
-		String file = fileName;
+		String dir = directoryName;
+		String file = "";
 		
 		switch (op) {
 		case 0:
-			file += "Find";
+			file = "Find";
 			break;
 		case 1:
-			file += "Insert";
+			file = "Insert";
 			break;
 		case 2:
-			file += "Delete";
+			file = "Delete";
 			break;
 		case 3:
-			file += "Max";
+			file = "Max";
 			break;
 		case 4:
-			file += "Min";
+			file = "Min";
 			break;
 		default:
 			break;
@@ -101,14 +102,14 @@ public class TimeTests {
 		labels.add("SplayTree");
 		labels.add("SkipList");
 		
-		Print2CSV export = new Print2CSV(file+".csv");
+		Print2CSV export = new Print2CSV(dir, file+".csv");
 		ArrayList<ArrayList<Long>> data = new ArrayList<>();
-		data.add(bstResult.get(0));
-		data.add(avlResult.get(0));
-		data.add(redBlackResult.get(0));
-		data.add(treapResult.get(0));
-		data.add(splayResult.get(0));
-		data.add(listResult.get(0));
+		data.add(bstResult.get(op));
+		data.add(avlResult.get(op));
+		data.add(redBlackResult.get(op));
+		data.add(treapResult.get(op));
+		data.add(splayResult.get(op));
+		data.add(listResult.get(op));
 		export.data2CSVFormat(labels, data, step, TO_FILE);
 	}
 }
