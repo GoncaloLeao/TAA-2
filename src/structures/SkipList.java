@@ -1,7 +1,10 @@
 package structures;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
+
+import structures.SimpleBST.Node;
 
 /**
  * A probabilistic alternative to balanced trees. A list with log n complexity
@@ -50,7 +53,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		maxLevel = 0;
 		rand = new Random(seed);
 	}
-	
+
 	public SkipList() {
 		this(System.currentTimeMillis());
 	}
@@ -89,15 +92,15 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 
 		x = x.getList().get(0);
-		
+
 		if (x != nil && x.getKey().compareTo(key) == 0)
 			return;
 
 		int v = 0; 						// number of levels for the new element
 		while (rand.nextBoolean()) v++;
-		
+
 		v = Math.min(v, maxLevel+1);
-		
+
 		if (v > maxLevel) {
 			head.getList().add(nil);
 			update.add(head);
@@ -158,19 +161,72 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		return x.getKey();
 	}
 
+	//https://courses.e-ce.uth.gr/CE210/doku.php?id=skiplist
 	@Override
-	public void dump(String filename) {
-		// TODO Auto-generated method stub
+	public String toDotString() {
+		StringBuilder stringBuilder = new StringBuilder();
 
+		stringBuilder.append("digraph {");
+		stringBuilder.append("\n");
+
+		stringBuilder.append("graph [rankdir=LR];");
+		stringBuilder.append("\n");
+		stringBuilder.append("node [shape=record,width=.1,height=.1];");
+		stringBuilder.append("\n");
+
+		stringBuilder.append("end [label = \"");
+		for(int i=maxLevel; i>=0; i--) {
+			stringBuilder.append(" <f"+i+"> ");
+			if( i>0 ) stringBuilder.append("|");
+			else stringBuilder.append(" end ");
+		}
+		stringBuilder.append("\"];");
+		stringBuilder.append("\n");
+
+		stringBuilder.append(toDotString(head));
+
+		stringBuilder.append("}");
+		stringBuilder.append("\n");
+		return stringBuilder.toString();
 	}
-	
+
+	private String toDotString(Node node) {
+		String itemName;    
+		if(node.getKey() == null) itemName = "\"-oo\"";
+		else itemName = node.getKey().toString();
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		stringBuilder.append(itemName + " [label = \"");
+
+		int level = node.getList().size() - 1;
+		for(int i=level; i>=0; i--) {
+			stringBuilder.append(" <f"+i+"> ");
+			stringBuilder.append(itemName.equals("\"-oo\"") ? "-oo" : itemName);
+			if( i>0 ) stringBuilder.append("|");
+		}
+		stringBuilder.append("\"];\n");
+
+		ArrayList<Node> next = node.getList();
+		for(int i=level; i>=0; i--) {
+			if( next.get(i).getKey() != null ) {
+				stringBuilder.append(itemName+":f"+i+" -> "+ next.get(i).getKey().toString()+":f"+i+";\n");
+			}
+			else stringBuilder.append(itemName+":f"+i+" -> end:f"+i+";\n");
+		}
+		if( next.get(0).getKey() != null ) {
+			stringBuilder.append(toDotString(next.get(0)));
+		}
+		return stringBuilder.toString();
+	}
+
 	@Override
 	public String toString() {
-		
+
 		StringBuilder string = new StringBuilder();
-		
+
 		Node x = head;
-		
+
 		for (int i = maxLevel; i >= 0; i--) {
 			string.append("HEAD ");
 			while (x.getList().get(0) != nil) {
@@ -184,7 +240,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 			string.append("-> NIL\n");
 			x = head;
 		}
-		
+
 		return string.toString();
 	}
 
@@ -195,5 +251,5 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 		return newArray;
 	} 
-	
+
 }

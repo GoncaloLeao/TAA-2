@@ -302,7 +302,8 @@ public class GUI {
 		btnSkipList.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-
+				set = new SkipList<Integer>();
+				updateImage();
 			}
 		});
 		//btnSkipList.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
