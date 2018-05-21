@@ -1,6 +1,7 @@
 package benchmarks;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -15,7 +16,7 @@ import structures.DynamicSet;
  */
 public class Benchmark {
 
-	private final Random RAND = new Random();
+	private final Random RAND;
 	private final int MAX_RAND = 100000000;
 	private final int TESTS = 5;
 
@@ -31,32 +32,49 @@ public class Benchmark {
 		this.numberTests = numberTests;
 		this.stepSize = stepSize;
 		this.numberSamples = numberSamples;
+		RAND = new Random(System.currentTimeMillis());
 	}
 
 	/**
-	 * Realize exhaustive time test in a given structure.
+	 * Realize exhaustive time test in a given structure using random inputs.
 	 * 
 	 * @param set
 	 *            - to be tested
+	 * @param inputFormat
+	 * 			  - of the elements to be inserted. 0 for ascending, 1 for uniform and 2 for Gaussian.           
+	 *            
 	 * @return - The result for the tests INSERT, REMOVE, MAX and MIN.
 	 * @throws NotEmptySetException
 	 *             - if the set is not empty
 	 */
-	public ArrayList<ArrayList<Long>> timeTest(DynamicSet<Integer> set) throws NotEmptySetException {
+	public ArrayList<ArrayList<Long>> timeTest(DynamicSet<Integer> set, int inputFormat) throws NotEmptySetException {
 		if (set.getMin() != null)
 			throw new NotEmptySetException();
 
 		ArrayList<ArrayList<Long>> results = initializeArray();
 
 		for (int j = 0; j < numberTests; j++) {
+			System.out.println("Testing: "+j);
 			for (int i = 0; i < numberSamples; i++) {
+				System.out.println("\tSample: "+i);
 				Long cont = 0L, start;
 				TreeSet<Integer> auxSet = new TreeSet<>();
-
+				ArrayList<Integer> auxArray = new ArrayList<>();
+				
 				for (int k = 0; k < stepSize * (j + 1); k++) {
-					int newElement = RAND.nextInt(MAX_RAND);
+					int newElement;
+				
+					if (inputFormat == 0) {
+						newElement = k;
+					} else if (inputFormat == 1) {
+						newElement = (int) (RAND.nextGaussian()*MAX_RAND);
+					} else {
+						newElement = RAND.nextInt(MAX_RAND);
+					}
+					
 					auxSet.add(newElement);
-
+					auxArray.add(newElement);
+					
 					start = System.nanoTime();
 					set.insert(newElement);
 					cont += System.nanoTime() - start;
@@ -76,7 +94,9 @@ public class Benchmark {
 
 				}
 
-				for (Integer it : auxSet) {
+				Collections.shuffle(auxArray);
+				
+				for (Integer it : auxArray) {
 					cont = 0L;
 					start = System.nanoTime();
 					set.find(it);
@@ -84,7 +104,7 @@ public class Benchmark {
 					incrementValue(results, j, Type.FIND, cont);
 				}
 				
-				for (Integer it : auxSet) {
+				for (Integer it : auxArray) {
 					cont = 0L;
 					start = System.nanoTime();
 					set.remove(it);
@@ -92,6 +112,7 @@ public class Benchmark {
 					incrementValue(results, j, Type.REMOVE, cont);
 				}
 			}
+			System.out.println();
 		}
 
 		for (int i = 0; i < results.size(); i++) {
@@ -104,6 +125,7 @@ public class Benchmark {
 	}
 
 	private void incrementValue(ArrayList<ArrayList<Long>> target, int caseTest, Type operation, Long value) {
+		
 		switch (operation) {
 		case FIND:
 			target.get(0).set(caseTest, target.get(0).get(caseTest) + value);

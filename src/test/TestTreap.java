@@ -1,17 +1,17 @@
-/*package test;
+package test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import structures.Treap;
 
@@ -23,13 +23,13 @@ public class TestTreap {
 	Treap<Integer> treap;
 	TreeSet<Integer> set;
 	
-	@BeforeAll
+	@BeforeClass
 	public static void setUp() {
 		nElements = 8192;
 		maxRand = 10000;
 	}
 	
-	@BeforeEach
+	@Before
 	public void setUpTest() {
 		treap = new Treap<Integer>();
 		rand = new Random();
@@ -49,7 +49,7 @@ public class TestTreap {
 			
 			assertEquals(new Integer(newElement), treap.find(newElement));
 			checkHeapProperty(treap.getRoot());
-			checkBTProperty(treap.getRoot());
+			checkBSTProperty(treap.getRoot());
 			
 			assertEquals(set.size(), treap.getSize());
 			assertEquals(set.first(), treap.getMin());
@@ -64,7 +64,7 @@ public class TestTreap {
 			
 			assertNull(treap.find(newElement));
 			checkHeapProperty(treap.getRoot());
-			checkBTProperty(treap.getRoot());
+			checkBSTProperty(treap.getRoot());
 			
 			assertEquals(set.size(), treap.getSize());
 			if (set.size() > 0 && treap.getSize() > 0) {
@@ -84,7 +84,7 @@ public class TestTreap {
 			treap.insert(newElement);
 			assertEquals(new Integer(newElement), treap.find(newElement));
 			checkHeapProperty(treap.getRoot());
-			checkBTProperty(treap.getRoot());
+			checkBSTProperty(treap.getRoot());
 		}
 		
 		for (int i = 0; i < nElements; i++) {
@@ -92,7 +92,7 @@ public class TestTreap {
 			treap.remove(newElement);
 			assertNull(treap.find(newElement));
 			checkHeapProperty(treap.getRoot());
-			checkBTProperty(treap.getRoot());
+			checkBSTProperty(treap.getRoot());
 		}
 		
 		assertNull(treap.find(1));
@@ -116,7 +116,7 @@ public class TestTreap {
 		}
 	}
 	
-	private void checkBTProperty(Treap<Integer>.Node node) {
+	private void checkBSTProperty(Treap<Integer>.Node node) {
 		Queue<Treap<Integer>.Node> queue = new ArrayDeque<>();
 		
 		if (node != null) queue.add(node);
@@ -134,4 +134,3 @@ public class TestTreap {
 		}
 	}
 }
-*/

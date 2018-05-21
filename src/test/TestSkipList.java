@@ -1,14 +1,14 @@
-/*package test;
+package test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Random;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import structures.SkipList;
 
@@ -21,14 +21,14 @@ public class TestSkipList {
 	private SkipList<Integer> list;
 	private TreeSet<Integer> set;
 	
-	@BeforeAll
+	@BeforeClass
 	public static void setUp() {
 		nElements = 100;
 		maxRand = 10000;
 		rand = new Random();
 	}
 	
-	@BeforeEach
+	@Before
 	public void setUpTest() {
 		list = new SkipList<>();
 		set = new TreeSet<>();
@@ -124,4 +124,3 @@ public class TestSkipList {
 	}
 	
 }
-*/

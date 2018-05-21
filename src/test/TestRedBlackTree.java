@@ -1,17 +1,17 @@
-/*package test;
+package test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayDeque;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import structures.RedBlackTree;
 
@@ -23,14 +23,14 @@ public class TestRedBlackTree {
 	private TreeSet<Integer> set;
 	private RedBlackTree<Integer> rb;
 	
-	@BeforeAll
+	@BeforeClass
 	public static void setUp() {
 		nElements = 10000;
 		maxRand = 100000;
 		rand = new Random();
 	} 
 	
-	@BeforeEach
+	@Before
 	public void setUpTest() {
 		rb = new RedBlackTree<Integer>();
 		set = new TreeSet<Integer>();
@@ -255,4 +255,3 @@ public class TestRedBlackTree {
 
 	
 }
-*/

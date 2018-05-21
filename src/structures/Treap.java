@@ -11,7 +11,7 @@ import java.util.Random;
  *
  */
 public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
-	private Random randGenerator = new Random();
+	private Random rand;
 	private final int LIMIT = 10000;
 	private final int INF = LIMIT + 1;
 	private int size;
@@ -25,7 +25,7 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 
 		protected Node(K key) {
 			this.key = key;
-			this.priority = randGenerator.nextInt(LIMIT);
+			this.priority = rand.nextInt(LIMIT);
 		}
 
 		public K getKey() {
@@ -57,8 +57,13 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 	}
 
-	public Treap() {
+	public Treap(long seed) {
 		this.size = 0;
+		rand = new Random(seed);
+	}
+	
+	public Treap() {
+		this(System.currentTimeMillis());
 	}
 
 	@Override

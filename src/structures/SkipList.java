@@ -19,7 +19,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 	private int maxLevel;
 	private Node head;
 	private Node nil;
-	private final Random rand = new Random();
+	private final Random rand;
 
 	public class Node {
 		private K key;
@@ -43,11 +43,16 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 	}
 
-	public SkipList() {
+	public SkipList(long seed) {
 		head = new Node(null);
 		nil = new Node(null);
 		head.getList().add(nil);
 		maxLevel = 0;
+		rand = new Random(seed);
+	}
+	
+	public SkipList() {
+		this(System.currentTimeMillis());
 	}
 
 	@Override
@@ -88,7 +93,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		if (x != nil && x.getKey().compareTo(key) == 0)
 			return;
 
-		int v = 0;
+		int v = 0; 						// number of levels for the new element
 		while (rand.nextBoolean()) v++;
 		
 		v = Math.min(v, maxLevel+1);
@@ -104,7 +109,7 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		for (int i = 0; i <= v; i++) {
 			newNode.getList().add(update.get(i).getList().get(i));
 			update.get(i).getList().set(i, newNode);
-		}		
+		}
 	}
 
 	@Override

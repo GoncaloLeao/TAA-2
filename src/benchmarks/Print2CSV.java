@@ -1,5 +1,6 @@
 package benchmarks;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -15,8 +16,17 @@ public class Print2CSV {
 	PrintWriter file;
 	String fileName;
 
-	public Print2CSV(String fileName) {
-		this.fileName = fileName; 
+	public Print2CSV(String directoryName, String fileName) {
+		File directory = new File("./Benchmark/"+directoryName);
+		
+		try {
+			if (!directory.exists()) directory.mkdir();
+		} catch (Exception e) {
+			System.out.println("Impossible to create the directory. ");
+			System.exit(0);
+		}
+		
+		this.fileName = "./Benchmark/"+directoryName+"/"+fileName; 
 	}
 
 	/**
@@ -30,7 +40,7 @@ public class Print2CSV {
 	 * @param step
 	 *            - size of test in each column of the matrix
 	 * @param toFile
-	 *            - to indicate if the print will be at standad or file output
+	 *            - to indicate if the print will be at standard or file output (false to standard output)
 	 */
 	public void data2CSVFormat(ArrayList<String> labels, ArrayList<ArrayList<Long>> data, int step, boolean toFile) {
 		
