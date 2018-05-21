@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.NumberFormatter;
 
 import graphviz.GraphViz;
+import structures.AVLTree;
 import structures.DynamicSet;
 import structures.RedBlackTree;
 import structures.SimpleBST;
@@ -244,7 +245,8 @@ public class GUI {
 		btnAVLTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-
+				set = new AVLTree<Integer>();
+				updateImage();
 			}
 		});
 		//btnAVLTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
