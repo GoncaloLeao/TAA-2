@@ -18,6 +18,7 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -41,7 +42,8 @@ public class GUI {
 
 	private DynamicSet<Integer> set;
 	private static final String BASE_FILENAME = System.getProperty("user.dir") + System.getProperty("file.separator") + "temp" + System.getProperty("file.separator") + "set" + ".gif";
-
+	private static final int MAX_VALUE = 10000000;
+	
 	//Buttons to switch DS
 	private JButton btnSimpleBST;
 	private JButton btnAVLTree;
@@ -63,6 +65,13 @@ public class GUI {
 	private JLabel lblRemove;
 	private JSpinner spnRemove;
 	private JButton btnRemove;
+	
+	private JButton btnGetMin;
+	private JButton btnGetMax;
+	
+	private JLabel lblInsertRand;
+	private JSpinner spnInsertRand;
+	private JButton btnInsertRand;
 
 	//For the pane with the data structure image
 	private JPanel pnlDS;
@@ -312,7 +321,7 @@ public class GUI {
 	}
 
 	void initOps() {
-		SpinnerModel elemModel = new SpinnerNumberModel(0, 0, 10000000, 1);
+		SpinnerModel elemModel = new SpinnerNumberModel(0, 0, MAX_VALUE, 1);
 
 		//Find
 
@@ -398,6 +407,61 @@ public class GUI {
 		btnRemove.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
 		btnRemove.setBounds((int)Math.round(frmGUI.getWidth()*29/32.0), (int)Math.round(frmGUI.getHeight()*13/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
 		frmGUI.getContentPane().add(btnRemove);
+		
+		//Get min/max
+		
+		btnGetMin = new JButton("min");
+		btnGetMin.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				set.getMin();
+				updateImage();
+			}
+		});
+		btnGetMin.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*17/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(btnGetMin);
+		
+		btnGetMax = new JButton("max");
+		btnGetMax.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				set.getMax();
+				updateImage();
+			}
+		});
+		btnGetMax.setBounds((int)Math.round(frmGUI.getWidth()*28/32.0), (int)Math.round(frmGUI.getHeight()*17/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(btnGetMax);
+		
+		//Insert random elements
+		
+		lblInsertRand = new JLabel("Insert random");
+		lblInsertRand.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*19/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(lblInsertRand);
+
+		SpinnerModel modelInsertRand = new SpinnerNumberModel(0, 0, 1000, 1);
+		spnInsertRand = new JSpinner(modelInsertRand);
+		//Prevent invalid input
+		txt = ((JSpinner.NumberEditor) spnInsertRand.getEditor()).getTextField();
+		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
+
+		spnInsertRand.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*21/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(spnInsertRand);
+
+		btnInsertRand = new JButton("");
+		btnInsertRand.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				Integer numInserts = (Integer)spnInsertRand.getValue();
+				Random rand = new Random(System.currentTimeMillis());
+				for(int i = 0; i < numInserts; i++) {
+					set.insert(rand.nextInt(MAX_VALUE + 1));
+				}
+				updateImage();
+			}
+		});
+		btnInsertRand.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
+		btnInsertRand.setBounds((int)Math.round(frmGUI.getWidth()*29/32.0), (int)Math.round(frmGUI.getHeight()*21/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(btnInsertRand);
 	}
 
 	private void move(double deltaX, double deltaY) {

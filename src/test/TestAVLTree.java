@@ -63,8 +63,6 @@ public class TestAVLTree {
 		assertEquals(new Integer(2), avl.getMin());
 		assertEquals(new Integer(10), avl.getMax());
 		
-		avl.dump("test.txt");
-		
 		avl.remove(7);
 		assertEquals("([3]6,"
 				+ 		"([2]4,([1]2,(),()),([1]5,(),())),"

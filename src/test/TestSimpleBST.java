@@ -56,8 +56,6 @@ public class TestSimpleBST {
 		assertEquals(new Integer(2), bst.getMin());
 		assertEquals(new Integer(10), bst.getMax());
 		
-		bst.dump("test.txt");
-		
 		bst.remove(10);
 		assertEquals("(4,(2,(),()),(7,(6,(5,(),()),()),()))", bst.toString());
 		assertEquals(new Integer(6), bst.find(6));
@@ -149,8 +147,6 @@ public class TestSimpleBST {
 		assertEquals(new Integer(7), bst.getMax());
 		
 		System.out.println(bst.toString());
-		
-		bst.dump("test.txt");
 	}
 	
 	@Test
@@ -206,8 +202,6 @@ public class TestSimpleBST {
 		assertEquals(null, bst.find("pedro"));
 		
 		System.out.println(bst.toString());
-		
-		bst.dump("test.txt");
 	}
 
 }

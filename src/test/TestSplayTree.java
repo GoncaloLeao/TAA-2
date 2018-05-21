@@ -78,8 +78,6 @@ public class TestSplayTree {
 		
 		assertEquals(new Integer(10), splay.getMax());
 		assertEquals("(10,(7,(5,(2,(),(4,(),())),(6,(),())),()),())", splay.toString());
-		
-		splay.dump("test.txt");
 
 		splay.remove(10);
 		assertEquals("(7,(5,(2,(),(4,(),())),(6,(),())),())", splay.toString());
@@ -153,8 +151,6 @@ public class TestSplayTree {
 		assertEquals("(5,(4,(1,(),(2,(),(3,(),()))),()),(7,(),()))", splay.toString());
 		
 		System.out.println(splay.toString());
-		
-		splay.dump("test.txt");
 	}
 	
 	@Test
@@ -215,7 +211,5 @@ public class TestSplayTree {
 		assertEquals(null, splay.find("pedro"));
 		
 		System.out.println(splay.toString());
-		
-		splay.dump("test.txt");
 	}
 }
