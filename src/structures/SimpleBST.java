@@ -1,8 +1,5 @@
 package structures;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.LinkedList;
 
 public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
@@ -164,17 +161,12 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
         return stringBuilder.toString();
     }
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public void dump(String filename) {
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter(new FileOutputStream(filename, false));
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("The specified file " + filename + " does not exist.");
-		}
+	public String toDotString() {
+		StringBuilder stringBuilder = new StringBuilder();
 
-		writer.println("digraph {");
+		stringBuilder.append("digraph {");
+		stringBuilder.append("\n");
 
 		// Dump all the nodes
 		LinkedList<Node> curLevelNodes = new LinkedList<Node>();
@@ -187,36 +179,44 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 				nextLevelNodes.clear();
 				
 				//Draw the current level's nodes
-				writer.print(" { rank=same; ");
+				stringBuilder.append(" { rank=same; ");
 				for(int i = 0; i < curLevelNodes.size(); i++) {
 					Node node = curLevelNodes.get(i);
-					writer.print(node.getKey() + "; ");
+					stringBuilder.append(node.getKey() + "; ");
 				}
-				writer.println("}");
+				stringBuilder.append("}");
+				stringBuilder.append("\n");
 				
 				while(!curLevelNodes.isEmpty()) {
 					Node node = curLevelNodes.remove();
-					writer.println(node.getKey() + " [shape=circle];");
+					stringBuilder.append(node.getKey() + " [shape=circle];");
+					stringBuilder.append("\n");
 					
 					Node left = node.getLeft();
 					if(left != null) {
 						nextLevelNodes.add(left);
-						writer.println(node.getKey() + "->" + left.getKey());
+						stringBuilder.append(node.getKey() + "->" + left.getKey());
+						stringBuilder.append("\n");
 					}
 					else {
-						writer.println("null" + nullDotCount + " [shape=point];");
-						writer.println(node.getKey() + "->" + "null" + nullDotCount);
+						stringBuilder.append("null" + nullDotCount + " [shape=point];");
+						stringBuilder.append("\n");
+						stringBuilder.append(node.getKey() + "->" + "null" + nullDotCount);
+						stringBuilder.append("\n");
 						nullDotCount++;
 					}
 					
 					Node right = node.getRight();
 					if(right != null) {
 						nextLevelNodes.add(right);
-						writer.println(node.getKey() + "->" + right.getKey());
+						stringBuilder.append(node.getKey() + "->" + right.getKey());
+						stringBuilder.append("\n");
 					}
 					else {
-						writer.println("null" + nullDotCount + " [shape=point];");
-						writer.println(node.getKey() + "->" + "null" + nullDotCount);
+						stringBuilder.append("null" + nullDotCount + " [shape=point];");
+						stringBuilder.append("\n");
+						stringBuilder.append(node.getKey() + "->" + "null" + nullDotCount);
+						stringBuilder.append("\n");
 						nullDotCount++;
 					}
 				}
@@ -227,8 +227,9 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 			while (!nextLevelNodes.isEmpty());
 		}
 
-		writer.println("}");
-		writer.close();
+		stringBuilder.append("}");
+		stringBuilder.append("\n");
+		return stringBuilder.toString();
 	}
 	
 }

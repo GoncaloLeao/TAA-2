@@ -7,5 +7,5 @@ public interface DynamicSet<K extends Comparable<K>> {
 	public K getMin();
 	public K getMax();
 	public String toString();
-	public void dump(String filename);
+	public String toDotString();
 }

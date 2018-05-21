@@ -1,3 +1,6 @@
+//Top-down splay tree: http://digital.cs.usu.edu/~allan/DS/Notes/Ch22.pdf
+//Codigo util: http://www.link.cs.cmu.edu/link/ftp-site/splaying/SplayTree.java
+
 package structures;
 
 import java.io.FileNotFoundException;
@@ -24,19 +27,6 @@ public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
     	public void setLeft(Node left) { this.left = left; }
     	public void setRight(Node right) { this.right = right; }
     }
-	
-	public class NodePair {
-		private Node first;
-		private Node second;
-		
-		public NodePair(Node first, Node second) {
-			this.first = first;
-			this.second = second;
-		}
-		
-		public Node getFirst() { return first; }
-		public Node getSecond() { return second; }
-	}
 	
 	public Node root;
    
@@ -70,31 +60,25 @@ public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	@Override
 	public void insert(K key) {
-		NodePair pair = insert(root, key);
-		root = pair.getFirst();
-		splay(pair.getSecond().getKey());
+		root = insert(root, key);
+		splay(key);
 	}
 
-    private NodePair insert(Node node, K key) { 
-    	// Node is empty
-    	if(node == null) {
-    		Node newNode = new Node(key);
-    		return new NodePair(newNode, newNode);
-    	}
-    	// Add to the left subtree
+	protected Node insert(Node node, K key) { 
+    	//Node is empty
+    	if (node == null) return new Node(key);
+    	//Add to the left subtree
     	else if (key.compareTo(node.getKey()) < 0) {
-    		NodePair pair = insert(node.getLeft(), key);
-    		node.setLeft(pair.getFirst());
-    		return new NodePair(node, pair.getSecond());
+    		node.setLeft(insert(node.getLeft(), key));
+    		return node;
     	}
-    	// Add to the right subtree
+    	//Add to the right subtree
     	else if (key.compareTo(node.getKey()) > 0) {
-    		NodePair pair = insert(node.getRight(), key);
-    		node.setRight(pair.getFirst());
-    		return new NodePair(node, pair.getSecond());
+    		node.setRight(insert(node.getRight(), key));
+    		return node;
     	}
-    	// Tree has the key on its root
-    	else return new NodePair(node, node);
+    	//Tree has the key on its root
+        else return node;
     }
 
 	@Override

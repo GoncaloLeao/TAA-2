@@ -1,6 +1,3 @@
-//Top-down splay tree: http://digital.cs.usu.edu/~allan/DS/Notes/Ch22.pdf
-//Codigo util: http://www.link.cs.cmu.edu/link/ftp-site/splaying/SplayTree.java
-
 package test;
 
 import structures.SplayTree;
