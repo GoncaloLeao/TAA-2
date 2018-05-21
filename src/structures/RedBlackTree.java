@@ -1,5 +1,9 @@
 package structures;
 
+import java.util.LinkedList;
+
+import structures.SimpleBST.Node;
+
 /**
  * A self-balanced binary search tree where each node has an extra bit and that
  * bit is interpreted as the color (red or black). These color bits are used to
@@ -231,8 +235,78 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 	}
 
 	@Override
-	public void dump(String filename) {
-		// TODO Auto-generated method stub
+	public String toDotString() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		stringBuilder.append("digraph {");
+		stringBuilder.append("\n");
+
+		// Dump all the nodes
+		LinkedList<Node> curLevelNodes = new LinkedList<Node>();
+		LinkedList<Node> nextLevelNodes = new LinkedList<Node>();
+		int nullDotCount = 0;
+		
+		if(root != null) {
+			curLevelNodes.add(root);
+			do {
+				nextLevelNodes.clear();
+				
+				//Draw the current level's nodes
+				stringBuilder.append(" { rank=same; ");
+				for(int i = 0; i < curLevelNodes.size(); i++) {
+					Node node = curLevelNodes.get(i);
+					if(node.getKey() != null) stringBuilder.append(node.getKey() + "; ");
+				}
+				stringBuilder.append("}");
+				stringBuilder.append("\n");
+				
+				while(!curLevelNodes.isEmpty()) {
+					Node node = curLevelNodes.remove();
+					if(node.getKey() != null) {
+						if(node.getColor() == RED) stringBuilder.append(node.getKey() + " [shape=circle, style=filled, fillcolor=red];");
+						else stringBuilder.append(node.getKey() + " [shape=circle, style=filled, fillcolor=black, fontcolor=white];");
+						stringBuilder.append("\n");
+						
+						Node left = node.getLeft();
+						if(left != null && left.getKey() != null) {
+							nextLevelNodes.add(left);
+							stringBuilder.append(node.getKey() + "->" + left.getKey());
+							stringBuilder.append("\n");
+						}
+						else {
+							stringBuilder.append("null" + nullDotCount + " [shape=point];");
+							stringBuilder.append("\n");
+							stringBuilder.append(node.getKey() + "->" + "null" + nullDotCount);
+							stringBuilder.append("\n");
+							nullDotCount++;
+						}
+						
+						Node right = node.getRight();
+						if(right != null && right.getKey() != null) {
+							nextLevelNodes.add(right);
+							stringBuilder.append(node.getKey() + "->" + right.getKey());
+							stringBuilder.append("\n");
+						}
+						else {
+							stringBuilder.append("null" + nullDotCount + " [shape=point];");
+							stringBuilder.append("\n");
+							stringBuilder.append(node.getKey() + "->" + "null" + nullDotCount);
+							stringBuilder.append("\n");
+							nullDotCount++;
+						}
+					}
+					
+				}
+				
+				//Prepare the next curLevelNodes array
+				curLevelNodes = (LinkedList<RedBlackTree<K>.Node>) nextLevelNodes.clone();
+			}
+			while (!nextLevelNodes.isEmpty());
+		}
+
+		stringBuilder.append("}");
+		stringBuilder.append("\n");
+		return stringBuilder.toString();
 	}
 
 	@Override
