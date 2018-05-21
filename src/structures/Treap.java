@@ -1,6 +1,11 @@
 package structures;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
+import java.util.Stack;
+
+import structures.ScapegoatTree.Node;
 
 /**
  * A binary search tree in which every node has both a search key and a
@@ -215,10 +220,116 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 
 		return stringBuilder.toString();
 	}
+	
+	private Integer getMinPriority() {
+		if(root != null) return root.getPriority();
+		else return null;
+	}
+	
+	private Integer getMaxPriority() {
+		if(root == null) return null;
+		else {
+			Integer maxPriority = new Integer(-1);
+			ArrayList<Node> list = new ArrayList<Node>();
+			Node curNode = root; //next node whose left subtree must be explored first
+			Stack<Node> stack = new Stack<Node>(); //nodes whose left (but not right) subtree has been explored, and not included in the list yet
+			while(curNode != null || !stack.empty()) {
+				//Check if we need explore a left subtree first
+				if(curNode != null) {
+					stack.push(curNode);
+					curNode = curNode.getLeft();
+				}
+				//Check if there we need to add a node to the list and explore its right subtree
+				else if (!stack.empty()){
+					list.add(stack.pop());
+					Node node = list.get(list.size() - 1);
+					if(node.getPriority() > maxPriority) maxPriority = node.getPriority();
+					curNode = node.getRight();
+				}
+			}
+			
+			return maxPriority;
+		}
+	}
 
 	@Override
-	public void dump(String filename) {
-		// TODO Auto-generated method stub
+	public String toDotString() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		stringBuilder.append("digraph {");
+		stringBuilder.append("\n");
+		
+		Integer minPriority = getMinPriority();
+		Integer maxPriority = getMaxPriority();
+		
+		System.out.println("minP = " + minPriority + ", max = " + maxPriority);
+
+		// Dump all the nodes
+		LinkedList<Node> curLevelNodes = new LinkedList<Node>();
+		LinkedList<Node> nextLevelNodes = new LinkedList<Node>();
+		int nullDotCount = 0;
+		
+		if(root != null) {
+			curLevelNodes.add(root);
+			do {
+				nextLevelNodes.clear();
+				
+				//Draw the current level's nodes
+				stringBuilder.append(" { rank=same; ");
+				for(int i = 0; i < curLevelNodes.size(); i++) {
+					Node node = curLevelNodes.get(i);
+					stringBuilder.append(node.getKey() + "; ");
+				}
+				stringBuilder.append("}");
+				stringBuilder.append("\n");
+				
+				while(!curLevelNodes.isEmpty()) {
+					Node node = curLevelNodes.remove();
+					//Compute the color
+					double hue = 0;
+					if(!minPriority.equals(maxPriority)) hue = node.getPriority() * 0.17 / (maxPriority - minPriority);
+					
+					stringBuilder.append(node.getKey() + " [shape=circle, style=filled, fillcolor=\"" + hue + " 1.000 1.000\", label=<"+ node.getKey() +"<BR /><FONT POINT-SIZE=\"10\">" + node.getPriority() + "</FONT>>];");
+					stringBuilder.append("\n");
+					
+					Node left = node.getLeft();
+					if(left != null) {
+						nextLevelNodes.add(left);
+						stringBuilder.append(node.getKey() + "->" + left.getKey());
+						stringBuilder.append("\n");
+					}
+					else {
+						stringBuilder.append("null" + nullDotCount + " [shape=point];");
+						stringBuilder.append("\n");
+						stringBuilder.append(node.getKey() + "->" + "null" + nullDotCount);
+						stringBuilder.append("\n");
+						nullDotCount++;
+					}
+					
+					Node right = node.getRight();
+					if(right != null) {
+						nextLevelNodes.add(right);
+						stringBuilder.append(node.getKey() + "->" + right.getKey());
+						stringBuilder.append("\n");
+					}
+					else {
+						stringBuilder.append("null" + nullDotCount + " [shape=point];");
+						stringBuilder.append("\n");
+						stringBuilder.append(node.getKey() + "->" + "null" + nullDotCount);
+						stringBuilder.append("\n");
+						nullDotCount++;
+					}
+				}
+				
+				//Prepare the next curLevelNodes array
+				curLevelNodes = (LinkedList<Treap<K>.Node>) nextLevelNodes.clone();
+			}
+			while (!nextLevelNodes.isEmpty());
+		}
+
+		stringBuilder.append("}");
+		stringBuilder.append("\n");
+		return stringBuilder.toString();
 	}
 
 	private Node rotateLeft(Node x) {

@@ -290,7 +290,8 @@ public class GUI {
 		btnTreap.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-
+				set = new Treap<Integer>();
+				updateImage();
 			}
 		});
 		//btnTreap.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
