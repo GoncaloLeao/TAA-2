@@ -12,10 +12,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.NumberFormatter;
 
 import graphviz.GraphViz;
-import structures.AVLTree;
-import structures.DynamicSet;
-import structures.RedBlackTree;
-import structures.SimpleBST;
+import structures.*;
 
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -269,7 +266,8 @@ public class GUI {
 		btnSplayTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-
+				set = new SplayTree<Integer>();
+				updateImage();
 			}
 		});
 		//btnSplayTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
@@ -280,7 +278,8 @@ public class GUI {
 		btnScapegoatTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-
+				set = new ScapegoatTree<Integer>(0.5); //TODO: GUI to choose param
+				updateImage();
 			}
 		});
 		//btnScapegoatTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
