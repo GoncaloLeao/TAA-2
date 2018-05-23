@@ -79,7 +79,7 @@ public class GraphViz
     /**
      * Detects the client's operating system.
      */
-    private final static String osName = System.getProperty("os.name").replaceAll("\\s","");
+    //private final static String osName = System.getProperty("os.name").replaceAll("\\s","");
 
     /**
      * The image size in dpi. 96 dpi is normal size. Higher values are 10% higher each.

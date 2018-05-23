@@ -161,6 +161,7 @@ public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
         return stringBuilder.toString();
     }
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public String toDotString() {
 		StringBuilder stringBuilder = new StringBuilder();

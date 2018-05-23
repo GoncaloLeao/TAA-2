@@ -3,12 +3,7 @@
 
 package structures;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.LinkedList;
-
-import structures.SimpleBST.Node;
 
 public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
@@ -151,7 +146,8 @@ public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
         return stringBuilder.toString();
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
 	public String toDotString() {
 		StringBuilder stringBuilder = new StringBuilder();
 

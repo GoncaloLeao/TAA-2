@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Stack;
 
-import structures.ScapegoatTree.Node;
-
 /**
  * A binary search tree in which every node has both a search key and a
  * priority, where the inorder sequence of search keys is sorted and each node's
@@ -252,6 +250,7 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String toDotString() {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -261,8 +260,6 @@ public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
 		
 		Integer minPriority = getMinPriority();
 		Integer maxPriority = getMaxPriority();
-		
-		System.out.println("minP = " + minPriority + ", max = " + maxPriority);
 
 		// Dump all the nodes
 		LinkedList<Node> curLevelNodes = new LinkedList<Node>();

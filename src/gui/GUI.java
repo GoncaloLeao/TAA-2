@@ -2,9 +2,10 @@ package gui;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextPane;
+import javax.swing.JToggleButton;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -18,7 +19,9 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -41,19 +44,28 @@ public class GUI {
 	private JFrame frmGUI;
 
 	private DynamicSet<Integer> set;
-	private static final String BASE_FILENAME = System.getProperty("user.dir") + System.getProperty("file.separator") + "temp" + System.getProperty("file.separator") + "set" + ".gif";
-	private static final int MAX_VALUE = 10000000;
+	private static final String BASE_FILENAME = System.getProperty("user.dir") + System.getProperty("file.separator") + "temp" + System.getProperty("file.separator") + "set" + ".gif"; //path to the dot image of the set being displayed
+	private static final int MAX_VALUE = 10000000; //max integer allowed on the sets
+	
+	//Help button
+	private JButton btnHelp;
 	
 	//Buttons to switch DS
-	private JButton btnSimpleBST;
-	private JButton btnAVLTree;
-	private JButton btnRedBlackTree;
-	private JButton btnSplayTree;
-	private JButton btnScapegoatTree;
-	private JButton btnTreap;
-	private JButton btnSkipList;
+	private ArrayList<JToggleButton> btnsList;
+	private JToggleButton btnSimpleBST;
+	private JToggleButton btnAVLTree;
+	private JToggleButton btnRedBlackTree;
+	private JToggleButton btnSplayTree;
+	private JToggleButton btnScapegoatTree;
+	private JToggleButton btnTreap;
+	private JToggleButton btnSkipList;
+	
+	private JLabel lblAlpha;
+	private JSpinner spnAlpha;
 
 	//Operation components
+	private static final String GO_FILENAME = System.getProperty("user.dir") + System.getProperty("file.separator") + "resources" + System.getProperty("file.separator") + "go.png";
+	
 	private JLabel lblFind;
 	private JSpinner spnFind;
 	private JButton btnFind;
@@ -66,16 +78,21 @@ public class GUI {
 	private JSpinner spnRemove;
 	private JButton btnRemove;
 	
+	private JLabel lblGetMin;
 	private JButton btnGetMin;
+	private JLabel lblGetMax;
 	private JButton btnGetMax;
 	
 	private JLabel lblInsertRand;
 	private JSpinner spnInsertRand;
 	private JButton btnInsertRand;
+	
+	//Console
+	JLabel lblConsole;
+	JTextPane txtPaneConsole;
+	JScrollPane pnlConsole;
 
 	//For the pane with the data structure image
-	private JPanel pnlDS;
-
 	private BufferedImage img;
 	private ImageIcon originalIcon;
 	private double zoom;
@@ -129,14 +146,9 @@ public class GUI {
 		frmGUI.setBounds((int)screenSize.getWidth()/16, (int)screenSize.getHeight()/16, (int)screenSize.getWidth()*7/8, (int)screenSize.getHeight()*7/8);
 		frmGUI.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmGUI.getContentPane().setLayout(null);
-		if(null == null) { //TODO
-			frmGUI.setTitle("Help");
-			ImageIcon icon = new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif"));
-			frmGUI.setIconImage(icon.getImage());
-		}
-		else {
-			frmGUI.setIconImage(Toolkit.getDefaultToolkit().getImage("resources/icon.png"));
-		}
+		
+		frmGUI.setTitle("Dynamic Sets");
+		frmGUI.setIconImage(Toolkit.getDefaultToolkit().getImage("resources/icon.png"));
 
 		initPnlDS();
 
@@ -145,6 +157,8 @@ public class GUI {
 
 		//Initialize the components for the operations (find, insert ...)
 		initOps();
+		
+		initConsole();
 	}
 
 	void initPnlDS() {
@@ -215,121 +229,190 @@ public class GUI {
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		label.setVerticalAlignment(SwingConstants.CENTER);
 		label.setBounds((int)Math.round(frmGUI.getWidth()*1/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*23/32.0), (int)Math.round(frmGUI.getHeight()*25/32.0));
-		/*
-		//label.setBounds(0, 0, frmGUI.getWidth(), frmGUI.getHeight());
+	
 		scroll = new JScrollPane(label);
-		//scroll.setBounds(1, 3, (int)Math.round(frmGUI.getWidth()*20/32.0), (int)Math.round(frmGUI.getHeight()*25/32.0));
-		//scroll.setBounds((int)Math.round(frmGUI.getWidth()*1/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*20/32.0), (int)Math.round(frmGUI.getHeight()*25/32.0));
-
-		pnlDS = new JPanel();
-		//pnlDS.setLayout(null);
-		pnlDS.add(scroll);
-		pnlDS.setBounds((int)Math.round(frmGUI.getWidth()*1/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*23/32.0), (int)Math.round(frmGUI.getHeight()*25/32.0));
-		 */
-		//label.setBounds(0, 0, pnlDS.getWidth(), pnlDS.getHeight());
-
-
-		scroll = new JScrollPane(label);
-		scroll.setBounds((int)Math.round(frmGUI.getWidth()*1/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*23/32.0), (int)Math.round(frmGUI.getHeight()*25/32.0));
+		scroll.setBounds((int)Math.round(frmGUI.getWidth()*1/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*23/32.0), (int)Math.round(frmGUI.getHeight()*27/32.0));
+		scroll.setBackground(Color.WHITE);
 		frmGUI.getContentPane().add(scroll);
 	}
 
 	void initBtns() {
-		btnSimpleBST = new JButton("Simple BST");
+		btnsList = new ArrayList<JToggleButton>();
+		
+		//Help button
+		btnHelp = new JButton("Help");
+		btnHelp.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				new HelpFrame();
+			}
+		});
+		btnHelp.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
+		btnHelp.setBounds((int)Math.round(frmGUI.getWidth()*28/32.0), (int)Math.round(frmGUI.getHeight()*2.5/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(btnHelp);
+		
+		//Data structure buttons
+		
+		btnSimpleBST = new JToggleButton("Simple BST");
+		btnSimpleBST.setSelected(true);
 		btnSimpleBST.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				set = new SimpleBST<Integer>();
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized a Simple BST.");
+				
+				final int INDEX = 0;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnSimpleBST.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnSimpleBST.setBounds((int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnSimpleBST.setBounds((int)Math.round(frmGUI.getWidth()*0.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnSimpleBST);
+		btnsList.add(btnSimpleBST);
 
-		btnAVLTree = new JButton("AVL Tree");
+		btnAVLTree = new JToggleButton("AVL Tree");
 		btnAVLTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				set = new AVLTree<Integer>();
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized an AVL Tree.");
+				
+				final int INDEX = 1;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnAVLTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnAVLTree.setBounds((int)Math.round(frmGUI.getWidth()*6/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnAVLTree.setBounds((int)Math.round(frmGUI.getWidth()*4.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnAVLTree);
+		btnsList.add(btnAVLTree);
 
-		btnRedBlackTree = new JButton("RB Tree");
+		btnRedBlackTree = new JToggleButton("RB Tree");
 		btnRedBlackTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				set = new RedBlackTree<Integer>();
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized a Red-Black Tree.");
+				
+				final int INDEX = 2;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnRedBlackTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnRedBlackTree.setBounds((int)Math.round(frmGUI.getWidth()*10/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnRedBlackTree.setBounds((int)Math.round(frmGUI.getWidth()*8.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnRedBlackTree);
+		btnsList.add(btnRedBlackTree);
 
-		btnSplayTree = new JButton("Splay Tree");
+		btnSplayTree = new JToggleButton("Splay Tree");
 		btnSplayTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				set = new SplayTree<Integer>();
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized a Splay Tree.");
+				
+				final int INDEX = 3;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnSplayTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnSplayTree.setBounds((int)Math.round(frmGUI.getWidth()*14/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnSplayTree.setBounds((int)Math.round(frmGUI.getWidth()*12.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnSplayTree);
+		btnsList.add(btnSplayTree);
 
-		btnScapegoatTree = new JButton("Scapegoat Tree");
+		btnScapegoatTree = new JToggleButton("Scapegoat Tree");
 		btnScapegoatTree.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				set = new ScapegoatTree<Integer>(0.5); //TODO: GUI to choose param
+				double alpha = (double)spnAlpha.getValue();
+				final double P10EN = 100000d; //used to determine the number of decimal places for the rounding
+				alpha = (double)Math.round(alpha * P10EN) / P10EN;
+				set = new ScapegoatTree<Integer>(alpha);
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized a Scapegoat Tree with alpha = " + alpha + ".");
+				
+				final int INDEX = 4;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnScapegoatTree.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnScapegoatTree.setBounds((int)Math.round(frmGUI.getWidth()*18/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnScapegoatTree.setBounds((int)Math.round(frmGUI.getWidth()*16.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*4/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnScapegoatTree);
+		btnsList.add(btnScapegoatTree);
+		
+		lblAlpha = new JLabel("Alpha");
+		lblAlpha.setBounds((int)Math.round(frmGUI.getWidth()*20.5/32.0), (int)Math.round(frmGUI.getHeight()*-0.5/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(lblAlpha);
+		
+		SpinnerModel modelAlpha = new SpinnerNumberModel(0.5, 0.5, 0.99, 0.05);
+		spnAlpha = new JSpinner(modelAlpha);
+		//Prevent invalid input
+		JFormattedTextField txt = ((JSpinner.NumberEditor) spnAlpha.getEditor()).getTextField();
+		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
 
-		btnTreap = new JButton("Treap");
+		spnAlpha.setBounds((int)Math.round(frmGUI.getWidth()*20.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		frmGUI.getContentPane().add(spnAlpha);
+
+		btnTreap = new JToggleButton("Treap");
 		btnTreap.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				set = new Treap<Integer>();
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized a Treap.");
+				
+				final int INDEX = 5;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnTreap.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnTreap.setBounds((int)Math.round(frmGUI.getWidth()*22/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnTreap.setBounds((int)Math.round(frmGUI.getWidth()*23.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnTreap);
+		btnsList.add(btnTreap);
 
-		btnSkipList = new JButton("Skip List");
+		btnSkipList = new JToggleButton("Skip List");
 		btnSkipList.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				set = new SkipList<Integer>();
 				updateImage();
+				
+				txtPaneConsole.setText("Initialized a Skip List.");
+				
+				final int INDEX = 6;
+				for(int i = 0; i < btnsList.size(); i++) {
+					if(i != INDEX) btnsList.get(i).setSelected(false);
+				}
 			}
 		});
-		//btnSkipList.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
-		btnSkipList.setBounds((int)Math.round(frmGUI.getWidth()*26/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
+		btnSkipList.setBounds((int)Math.round(frmGUI.getWidth()*27.5/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*1/32.0));
 		frmGUI.getContentPane().add(btnSkipList);
+		btnsList.add(btnSkipList);
 	}
 
 	void initOps() {
-		SpinnerModel elemModel = new SpinnerNumberModel(0, 0, MAX_VALUE, 1);
 
 		//Find
-
 		lblFind = new JLabel("Find");
 		lblFind.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
 		frmGUI.getContentPane().add(lblFind);
 
-		spnFind = new JSpinner(elemModel);
+		SpinnerModel modelFind = new SpinnerNumberModel(0, 0, MAX_VALUE, 1);
+		spnFind = new JSpinner(modelFind);
 		//Prevent invalid input
 		JFormattedTextField txt = ((JSpinner.NumberEditor) spnFind.getEditor()).getTextField();
 		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
@@ -342,17 +425,24 @@ public class GUI {
 
 			public void actionPerformed(ActionEvent arg0) {
 				Integer value = (Integer)spnFind.getValue();
-				set.find(value);
+				long start = System.nanoTime();
+				Integer result = set.find(value);
+				long time = System.nanoTime() - start;
 				updateImage();
+				
+				String timeStr = "Time elapsed: " + time + " ns.";
+				if(result != null) txtPaneConsole.setText("Found element: " + result + ".\n" + timeStr);
+				else txtPaneConsole.setText("Didn't find element: " + value + ".\n" + timeStr);
 			}
 		});
-		btnFind.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
+		try {
+			img = ImageIO.read(new File(GO_FILENAME));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		btnFind.setBounds((int)Math.round(frmGUI.getWidth()*29/32.0), (int)Math.round(frmGUI.getHeight()*5/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		btnFind.setIcon(new ImageIcon(img.getScaledInstance(btnFind.getWidth()/2,btnFind.getHeight()/2, Image.SCALE_SMOOTH)));
 		frmGUI.getContentPane().add(btnFind);
-
-		lblFind = new JLabel("Find");
-		lblFind.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*3/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
-		frmGUI.getContentPane().add(lblFind);
 
 		//Insert
 
@@ -360,7 +450,8 @@ public class GUI {
 		lblInsert.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*7/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
 		frmGUI.getContentPane().add(lblInsert);
 
-		spnInsert = new JSpinner(elemModel);
+		SpinnerModel modelInsert = new SpinnerNumberModel(0, 0, MAX_VALUE, 1);
+		spnInsert = new JSpinner(modelInsert);
 		//Prevent invalid input
 		txt = ((JSpinner.NumberEditor) spnInsert.getEditor()).getTextField();
 		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
@@ -373,12 +464,17 @@ public class GUI {
 
 			public void actionPerformed(ActionEvent arg0) {
 				Integer value = (Integer)spnInsert.getValue();
+				long start = System.nanoTime();
 				set.insert(value);
+				long time = System.nanoTime() - start;
 				updateImage();
+				
+				String timeStr = "Time elapsed: " + time + " ns.";
+				txtPaneConsole.setText("Inserted: " + value + ".\n" + timeStr);
 			}
 		});
-		btnInsert.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
 		btnInsert.setBounds((int)Math.round(frmGUI.getWidth()*29/32.0), (int)Math.round(frmGUI.getHeight()*9/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		btnInsert.setIcon(new ImageIcon(img.getScaledInstance(btnInsert.getWidth()/2,btnInsert.getHeight()/2, Image.SCALE_SMOOTH)));
 		frmGUI.getContentPane().add(btnInsert);
 
 		//Remove
@@ -387,7 +483,8 @@ public class GUI {
 		lblRemove.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*11/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
 		frmGUI.getContentPane().add(lblRemove);
 
-		spnRemove = new JSpinner(elemModel);
+		SpinnerModel modelRemove = new SpinnerNumberModel(0, 0, MAX_VALUE, 1);
+		spnRemove = new JSpinner(modelRemove);
 		//Prevent invalid input
 		txt = ((JSpinner.NumberEditor) spnRemove.getEditor()).getTextField();
 		((NumberFormatter) txt.getFormatter()).setAllowsInvalid(false);
@@ -400,45 +497,72 @@ public class GUI {
 
 			public void actionPerformed(ActionEvent arg0) {
 				Integer value = (Integer)spnRemove.getValue();
+				long start = System.nanoTime();
 				set.remove(value);
+				long time = System.nanoTime() - start;
 				updateImage();
+				
+				String timeStr = "Time elapsed: " + time + " ns.";
+				txtPaneConsole.setText("Removed: " + value + ".\n" + timeStr);
 			}
 		});
-		btnRemove.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
 		btnRemove.setBounds((int)Math.round(frmGUI.getWidth()*29/32.0), (int)Math.round(frmGUI.getHeight()*13/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		btnRemove.setIcon(new ImageIcon(img.getScaledInstance(btnRemove.getWidth()/2,btnRemove.getHeight()/2, Image.SCALE_SMOOTH)));
 		frmGUI.getContentPane().add(btnRemove);
 		
 		//Get min/max
 		
-		btnGetMin = new JButton("min");
+		lblGetMin = new JLabel("Get min");
+		lblGetMin.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*15/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(lblGetMin);
+		
+		btnGetMin = new JButton("");
 		btnGetMin.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				set.getMin();
+				long start = System.nanoTime();
+				Integer result = set.getMin();
+				long time = System.nanoTime() - start;
 				updateImage();
+				
+				String timeStr = "Time elapsed: " + time + " ns.";
+				if(result != null) txtPaneConsole.setText("Found min element: " + result + ".\n" + timeStr);
+				else txtPaneConsole.setText("Set is empty.\n" + timeStr);
 			}
 		});
 		btnGetMin.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*17/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		btnGetMin.setIcon(new ImageIcon(img.getScaledInstance(btnGetMin.getWidth()/2,btnGetMin.getHeight()/2, Image.SCALE_SMOOTH)));
 		frmGUI.getContentPane().add(btnGetMin);
 		
-		btnGetMax = new JButton("max");
+		lblGetMax = new JLabel("Get max");
+		lblGetMax.setBounds((int)Math.round(frmGUI.getWidth()*28/32.0), (int)Math.round(frmGUI.getHeight()*15/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(lblGetMax);
+		
+		btnGetMax = new JButton("");
 		btnGetMax.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				set.getMax();
+				long start = System.nanoTime();
+				Integer result = set.getMax();
+				long time = System.nanoTime() - start;
 				updateImage();
+				
+				String timeStr = "Time elapsed: " + time + " ns.";
+				if(result != null) txtPaneConsole.setText("Found max element: " + result + ".\n" + timeStr);
+				else txtPaneConsole.setText("Set is empty.\n" + timeStr);
 			}
 		});
 		btnGetMax.setBounds((int)Math.round(frmGUI.getWidth()*28/32.0), (int)Math.round(frmGUI.getHeight()*17/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		btnGetMax.setIcon(new ImageIcon(img.getScaledInstance(btnGetMax.getWidth()/2,btnGetMax.getHeight()/2, Image.SCALE_SMOOTH)));
 		frmGUI.getContentPane().add(btnGetMax);
 		
 		//Insert random elements
 		
-		lblInsertRand = new JLabel("Insert random");
-		lblInsertRand.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*19/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		lblInsertRand = new JLabel("Insert N random elements");
+		lblInsertRand.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*19/32.0), (int)Math.round(frmGUI.getWidth()*5/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
 		frmGUI.getContentPane().add(lblInsertRand);
 
-		SpinnerModel modelInsertRand = new SpinnerNumberModel(0, 0, 1000, 1);
+		SpinnerModel modelInsertRand = new SpinnerNumberModel(10, 0, 1000, 1);
 		spnInsertRand = new JSpinner(modelInsertRand);
 		//Prevent invalid input
 		txt = ((JSpinner.NumberEditor) spnInsertRand.getEditor()).getTextField();
@@ -453,17 +577,44 @@ public class GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				Integer numInserts = (Integer)spnInsertRand.getValue();
 				Random rand = new Random(System.currentTimeMillis());
+				long start = System.nanoTime();
 				for(int i = 0; i < numInserts; i++) {
 					set.insert(rand.nextInt(MAX_VALUE + 1));
 				}
+				long time = System.nanoTime() - start;
 				updateImage();
+				
+				String timeStr = "Time elapsed: " + time + " ns.";
+				txtPaneConsole.setText("Inserted " + numInserts + " random elements.\n" + timeStr);
 			}
 		});
-		btnInsertRand.setIcon(new ImageIcon(GUI.class.getResource("/com/sun/java/swing/plaf/motif/icons/Inform.gif")));
 		btnInsertRand.setBounds((int)Math.round(frmGUI.getWidth()*29/32.0), (int)Math.round(frmGUI.getHeight()*21/32.0), (int)Math.round(frmGUI.getWidth()*2/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		btnInsertRand.setIcon(new ImageIcon(img.getScaledInstance(btnInsertRand.getWidth()/2,btnInsertRand.getHeight()/2, Image.SCALE_SMOOTH)));
 		frmGUI.getContentPane().add(btnInsertRand);
 	}
 
+	void initConsole() {
+		lblConsole = new JLabel("Console");
+		//lblConsole.setForeground(new Color(0, 0, 128));
+		//lblConsole.setFont(new Font("Consolas", Font.PLAIN, 15));
+		lblConsole.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*23/32.0), (int)Math.round(frmGUI.getWidth()*3/32.0), (int)Math.round(frmGUI.getHeight()*2/32.0));
+		frmGUI.getContentPane().add(lblConsole);
+		
+		txtPaneConsole = new JTextPane();
+		//txtPaneConsole.setFont(new Font("Consolas", Font.PLAIN, 12));
+		//txtPaneConsole.setBackground(new Color(173,216,230));
+		//DefaultCaret caret = (DefaultCaret) txtPaneConsole.getCaret();
+		//caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+		txtPaneConsole.requestFocus();
+		txtPaneConsole.setEditable(false);
+		
+		pnlConsole = new JScrollPane(txtPaneConsole);
+		pnlConsole.setBounds((int)Math.round(frmGUI.getWidth()*25/32.0), (int)Math.round(frmGUI.getHeight()*25/32.0), (int)Math.round(frmGUI.getWidth()*6/32.0), (int)Math.round(frmGUI.getHeight()*5/32.0));
+		frmGUI.getContentPane().add(pnlConsole);
+		
+		txtPaneConsole.setText("Initialized a Simple BST.");
+	}
+	
 	private void move(double deltaX, double deltaY) {
 		int scrollX = scroll.getHorizontalScrollBar().getValue();
 		int scrollY = scroll.getVerticalScrollBar().getValue();
@@ -485,7 +636,6 @@ public class GUI {
 	//Updates the graphviz image used by the GUI
 	private void updateImage() {
 		GraphViz gv = new GraphViz();
-		System.out.println(set.toDotString());
 		gv.add(set.toDotString());
 		gv.increaseDpi();   // 106 dpi
 
@@ -498,7 +648,6 @@ public class GUI {
 		try {
 			img = ImageIO.read(new File(BASE_FILENAME));
 			originalIcon = new ImageIcon(img);
-			System.out.println("called here");
 			updateSetLabel();
 
 		} catch (IOException e) {

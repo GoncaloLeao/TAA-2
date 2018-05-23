@@ -1,10 +1,7 @@
 package structures;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
-
-import structures.SimpleBST.Node;
 
 /**
  * A probabilistic alternative to balanced trees. A list with log n complexity

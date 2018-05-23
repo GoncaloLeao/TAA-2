@@ -2,8 +2,6 @@ package structures;
 
 import java.util.LinkedList;
 
-import structures.SimpleBST.Node;
-
 /**
  * A self-balanced binary search tree where each node has an extra bit and that
  * bit is interpreted as the color (red or black). These color bits are used to
@@ -234,6 +232,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			return getMax(node.getRight());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String toDotString() {
 		StringBuilder stringBuilder = new StringBuilder();
