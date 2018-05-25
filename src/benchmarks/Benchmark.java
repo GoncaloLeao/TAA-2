@@ -62,6 +62,7 @@ public class Benchmark {
 				ArrayList<Integer> auxArray = new ArrayList<>();
 				
 				for (int k = 0; k < stepSize * (j + 1); k++) {
+					//System.out.println(k);
 					int newElement;
 				
 					if (inputFormat == 0) {
@@ -100,6 +101,81 @@ public class Benchmark {
 					cont = 0L;
 					start = System.nanoTime();
 					set.find(it);
+					cont += System.nanoTime() - start;
+					incrementValue(results, j, Type.FIND, cont);
+				}
+				
+				for (Integer it : auxArray) {
+					cont = 0L;
+					start = System.nanoTime();
+					set.remove(it);
+					cont += System.nanoTime() - start;
+					incrementValue(results, j, Type.REMOVE, cont);
+				}
+			}
+			System.out.println();
+		}
+
+		for (int i = 0; i < results.size(); i++) {
+			for (int j = 0; j < results.get(i).size(); j++) {
+				results.get(i).set(j, (results.get(i).get(j) / numberSamples)/(stepSize*(i+1)));
+			}
+		}
+
+		return results;
+	}
+	
+	public ArrayList<ArrayList<Long>> timeTest(TreeSet<Integer> set, int inputFormat) {
+		set.clear();
+		ArrayList<ArrayList<Long>> results = initializeArray();
+
+		for (int j = 0; j < numberTests; j++) {
+			System.out.println("Testing: "+j);
+			for (int i = 0; i < numberSamples; i++) {
+				System.out.println("\tSample: "+i);
+				Long cont = 0L, start;
+				TreeSet<Integer> auxSet = new TreeSet<>();
+				ArrayList<Integer> auxArray = new ArrayList<>();
+				
+				for (int k = 0; k < stepSize * (j + 1); k++) {
+					int newElement;
+				
+					if (inputFormat == 0) {
+						newElement = k;
+					} else if (inputFormat == 1) {
+						newElement = (int) (RAND.nextGaussian()*MAX_RAND);
+					} else {
+						newElement = RAND.nextInt(MAX_RAND);
+					}
+					
+					auxSet.add(newElement);
+					auxArray.add(newElement);
+					
+					start = System.nanoTime();
+					set.add(newElement);
+					cont += System.nanoTime() - start;
+					incrementValue(results, j, Type.INSERT, cont);
+
+					cont = 0L;
+					start = System.nanoTime();
+					set.last();
+					cont += System.nanoTime() - start;
+					incrementValue(results, j, Type.MAX, cont);
+
+					cont = 0L;
+					start = System.nanoTime();
+					set.first();
+					cont += System.nanoTime() - start;
+					incrementValue(results, j, Type.MIN, cont);
+
+				}
+
+				Collections.shuffle(auxArray);
+				
+				for (Integer it : auxArray) {
+					cont = 0L;
+					start = System.nanoTime();
+					set.contains(it);
 					cont += System.nanoTime() - start;
 					incrementValue(results, j, Type.FIND, cont);
 				}

@@ -1,6 +1,7 @@
 package benchmarks;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import structures.*;
 
@@ -14,19 +15,21 @@ import structures.*;
 public class TimeTests {	 
 	public final static boolean TO_FILE = true;
 	
-	public static int inputFormat = 2;
+	public static int inputFormat = 0;
 	public static int numberTests = 10;
-	public static int step = 5000;
+	public static int step = 1000;
 	public static int samples = 3;
 	public static String directoryName = "UniformInput";
 	
+	public static ArrayList<ArrayList<Long>> javaTreeSetResult;
 	public static ArrayList<ArrayList<Long>> bstResult;
 	public static ArrayList<ArrayList<Long>> avlResult;
 	public static ArrayList<ArrayList<Long>> redBlackResult;
-	public static ArrayList<ArrayList<Long>> treapResult;
 	public static ArrayList<ArrayList<Long>> splayResult;
+	public static ArrayList<ArrayList<Long>> scapeResult5;
+	public static ArrayList<ArrayList<Long>> scapeResult95;
+	public static ArrayList<ArrayList<Long>> treapResult;
 	public static ArrayList<ArrayList<Long>> listResult;
-	public static ArrayList<ArrayList<Long>> scapeResult;
 	
 	public static void main(String[] args) {
 		
@@ -54,21 +57,25 @@ public class TimeTests {
 		
 		Benchmark benchmark = new Benchmark(numberTests, step, samples);
 		
+		TreeSet<Integer> javaTreeSet = new TreeSet<>();
 		SimpleBST<Integer> bst = new SimpleBST<>();
 		AVLTree<Integer> avl = new AVLTree<>();
 		RedBlackTree<Integer> redBlack = new RedBlackTree<>();
-		Treap<Integer> treap = new Treap<>();
 		SplayTree<Integer> splay = new SplayTree<>();
+		Treap<Integer> treap = new Treap<>();
+		//ScapegoatTree<Integer> scape5 = new ScapegoatTree<>(0.5);
+		ScapegoatTree<Integer> scape95 = new ScapegoatTree<>(0.95);	
 		SkipList<Integer> list = new SkipList<>();
-		//ScapegoatTree<Integer> scape = new ScapegoatTree<>(0.5);
 		
+		javaTreeSetResult = benchmark.timeTest(javaTreeSet, inputFormat);
 		bstResult = benchmark.timeTest(bst, inputFormat);
 		avlResult = benchmark.timeTest(avl, inputFormat);
 		redBlackResult = benchmark.timeTest(redBlack, inputFormat);
-		treapResult = benchmark.timeTest(treap, inputFormat);
 		splayResult = benchmark.timeTest(splay, inputFormat);
+		treapResult = benchmark.timeTest(treap, inputFormat);
+		//scapeResult5 = benchmark.timeTest(scape5, inputFormat);
+		scapeResult95 = benchmark.timeTest(scape95, inputFormat);
 		listResult = benchmark.timeTest(list, inputFormat);
-		//scapeResult = benchmark.timeTest(scape, inputFormat);
 	
 		for (int i = 0; i < 5; i++) toPrint(i);
 	}
@@ -98,23 +105,27 @@ public class TimeTests {
 		}
 
 		ArrayList<String> labels = new ArrayList<>();
+		labels.add("JavaTreeSet");
 		labels.add("SimpleBST");
 		labels.add("AVLTree");
 		labels.add("RedBlackTree");
-		labels.add("Treap");
 		labels.add("SplayTree");
-		labels.add("SkipList");
-		//labels.add("ScapegoatTree");		
+		labels.add("Treap");
+		//labels.add("ScapegoatTree 0.5");
+		labels.add("ScapegoatTree 0.95");
+		labels.add("SkipList");		
 		
 		Print2CSV export = new Print2CSV(dir, file+".csv");
 		ArrayList<ArrayList<Long>> data = new ArrayList<>();
+		data.add(javaTreeSetResult.get(op));
 		data.add(bstResult.get(op));
 		data.add(avlResult.get(op));
 		data.add(redBlackResult.get(op));
-		data.add(treapResult.get(op));
 		data.add(splayResult.get(op));
+		data.add(treapResult.get(op));
+		//data.add(scapeResult5.get(op));
+		data.add(scapeResult95.get(op));
 		data.add(listResult.get(op));
-		//data.add(scapeResult.get(op));
 		
 		export.data2CSVFormat(labels, data, step, TO_FILE);
 	}
