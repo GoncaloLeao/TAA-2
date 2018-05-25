@@ -10,6 +10,7 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     	private K key;
     	private Node left;
     	private Node right;
+    	private Node parent;
     	 
     	protected Node(K key) {
     		this.key = key;
@@ -18,13 +19,23 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     	public K getKey() { return key; }
     	public Node getLeft() { return left; }
     	public Node getRight() { return right; }
-    	public boolean isLeaf() {
-    		return left == null && right == null;
+    	public Node getParent() { return parent; }
+    	public Node getSibling() {
+    		//Node is the root of the tree
+    		if(this.parent == null) return null;
+    		//Node isn't the root of the tree
+    		else {
+    			//This node is the left child if its parent
+    			if(this.key.compareTo(this.parent.key) < 0) return this.parent.right;
+    			//This node is the right child if its parent
+    			else return this.parent.left;
+    		}
     	}
     	
     	public void setKey(K key) { this.key = key; }
     	public void setLeft(Node left) { this.left = left; }
     	public void setRight(Node right) { this.right = right; }
+    	public void setParent(Node parent) { this.parent = parent; }
     }
 	
 	private Node root;
@@ -41,6 +52,10 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     	this.ALPHA = alpha;
     	this.size = 0;
     	this.maxSize = 0;
+    }
+    
+    public Node getRoot() {
+    	return this.root;
     }
     
 	/**
@@ -66,17 +81,39 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 	@Override
 	public void insert(K key) {
-		root = insert(root, key).node;		
+		InsertResult result = insert(root, key);
+		root = result.resultNode;
+		int height = result.nodeHeight;
+		
+		//Check if the inserted node is a deep node
+		if(height > hAlpha(size)) {
+			Node scapegoat = findScapegoat(result.insertedNode);
+			Node parent = scapegoat.getParent(); //the parent of the scapegoat node
+			Node newNode = rebuildTree(scapegoat);
+			newNode.setParent(parent);
+			//The whole tree was rebalanced (scapegoat was the root)
+			if(parent == null) {
+				this.maxSize = this.size;
+				root = newNode;
+			}
+			//Only a part of the tree was rebalanced
+			else {
+				//newNode is the left child if its parent
+    			if(newNode.getKey().compareTo(parent.getKey()) < 0) parent.setLeft(newNode);
+    			//This node is the right child if its parent
+    			else parent.setRight(newNode);
+			}
+		}
 	}
 	
 	private class InsertResult {
-		public Node node;
-		public int nodeSize;
+		public Node resultNode;
+		public Node insertedNode;
 		public int nodeHeight;
 		
-		public InsertResult(Node node, int nodeSize, int nodeHeight) {
-			this.node = node;
-			this.nodeSize = nodeSize;
+		public InsertResult(Node resultNode, Node insertedNode, int nodeHeight) {
+			this.resultNode = resultNode;
+			this.insertedNode = insertedNode;
 			this.nodeHeight = nodeHeight;
 		}
 	}
@@ -86,40 +123,43 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     	if (node == null) {
     		this.size++;
     		if(this.size > this.maxSize) this.maxSize = this.size;
-    		return new InsertResult(new Node(key), 1, 0);
+    		Node newNode = new Node(key);
+    		return new InsertResult(newNode, newNode, 0);
     	}
     	//Add to the left subtree
     	else if (key.compareTo(node.getKey()) < 0) {
     		InsertResult result = insert(node.getLeft(), key);
-    		node.setLeft(result.node);
+    		node.setLeft(result.resultNode);
+    		result.resultNode.setParent(node);
     		
     		int height = 1 + result.nodeHeight;
-    		int size = 1 + result.nodeSize + getSize(node.getRight());
-    		//Check if the node is a scapegoat
-    		if(height > hAlpha(size)) {
-    			//Rebuild the tree
-    			node = rebuildTree(node);
-    		}
-    		return new InsertResult(node, size, height); 
+    		return new InsertResult(node, result.insertedNode, height); 
     	}
     	//Add to the right subtree
     	else if (key.compareTo(node.getKey()) > 0) {
     		InsertResult result = insert(node.getRight(), key);
-    		node.setRight(result.node);
+    		node.setRight(result.resultNode);
+    		result.resultNode.setParent(node);
     		
     		int height = 1 + result.nodeHeight;
-    		int size = 1 + result.nodeSize + getSize(node.getLeft());
-    		//Check if the node is a scapegoat
-    		if(height > hAlpha(size)) {
-    			//Rebuild the tree
-    			node = rebuildTree(node);
-    			//TODO: update maxSize?
-    			//TODO: prevent rebuildTree from being called twice for the insert of a same key
-    		}
-    		return new InsertResult(node, size, height); 
+    		return new InsertResult(node, result.insertedNode, height);
     	}
     	//Tree has the key on its root
-    	else return new InsertResult(node, 1, 0);
+    	else return new InsertResult(node, node, 0);
+    }
+    
+    private Node findScapegoat(Node node) {
+    	int size = 1;
+    	int height = 0;
+    	Node n = node;
+    	while(n.getParent() != null) {
+    		height++;
+    		int totalSize = 1 + size + getSize(n.getSibling());
+    		if(height > hAlpha(totalSize)) return n.getParent();
+    		n = n.getParent();
+    		size = totalSize;
+    	}
+    	return null;
     }
 
 	@Override
@@ -129,6 +169,7 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 		if(this.size < this.ALPHA * this.maxSize) {
 			//Rebuid the whole tree
 			root = rebuildTree(root);
+			root.setParent(null);
 			//Set maxSize to size 
 			this.maxSize = this.size;
 		}
@@ -139,12 +180,16 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     	if (node == null) return null;
     	//Delete on the left subtree
     	else if (key.compareTo(node.getKey()) < 0) {
-    		node.setLeft(remove(node.getLeft(), key));
+    		Node newChild = remove(node.getLeft(), key);
+    		node.setLeft(newChild);
+    		if(newChild != null) newChild.setParent(node);
     		return node;
     	}
     	//Delete on the right subtree
         else if (key.compareTo(node.getKey()) > 0) {
-        	node.setRight(remove(node.getRight(), key));
+        	Node newChild = remove(node.getRight(), key);
+    		node.setRight(newChild);
+    		if(newChild != null) newChild.setParent(node);
         	return node;
         }
     	//Tree has the key on its root
@@ -164,7 +209,10 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     		else {
     			Node largestLeftNode = getMax(node.getLeft());
     			node.setKey(largestLeftNode.getKey());
-    			node.setLeft(remove(node.getLeft(), largestLeftNode.getKey()));
+    			
+    			Node newChild = remove(node.getLeft(), largestLeftNode.getKey());
+    			node.setLeft(newChild);
+    			if(newChild != null) newChild.setParent(node);
     			return node;
     		}
         }
@@ -253,10 +301,17 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	private Node buildTree(ArrayList<Node> list, int start, int end) {
 		if(start <= end) {
-			int middle = (start + end) / 2;
+			int middle = (int)Math.ceil((start + end) / 2.0);
 			Node node = list.get(middle);
-			node.setLeft(buildTree(list, start, middle - 1));
-			node.setRight(buildTree(list, middle + 1, end));
+			
+			Node newLeftChild = buildTree(list, start, middle - 1);
+			node.setLeft(newLeftChild);
+			if(newLeftChild != null) newLeftChild.setParent(node);
+			
+			Node newRightChild = buildTree(list, middle + 1, end);
+			node.setRight(newRightChild);
+			if(newRightChild != null) newRightChild.setParent(node);
+			
 			return node;
 		}
 		else return null;

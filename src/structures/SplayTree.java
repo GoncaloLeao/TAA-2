@@ -81,7 +81,7 @@ public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
 	@Override
 	public void remove(K key) {
 		if(root != null) {
-			//Splay the node to deelete to the root
+			//Splay the node to delete to the root
 			splay(key);
 			//Check if the tree truly contains the node to remove
 			if(root.getKey() == key) {
