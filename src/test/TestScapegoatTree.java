@@ -105,6 +105,20 @@ public class TestScapegoatTree {
 	public void testRemove() {
 		ScapegoatTree<Integer> sc = new ScapegoatTree<Integer>(0.57);
 
+		sc.remove(5);
+		checkParentsAreConsistent(sc);
+		sc.insert(5);
+		checkParentsAreConsistent(sc);
+		sc.remove(5);
+		checkParentsAreConsistent(sc);
+		sc.insert(5);
+		checkParentsAreConsistent(sc);
+		sc.insert(1);
+		checkParentsAreConsistent(sc);
+		sc.remove(5);
+		checkParentsAreConsistent(sc);
+		sc.remove(1);
+		checkParentsAreConsistent(sc);
 		sc.insert(5);
 		checkParentsAreConsistent(sc);
 		sc.insert(1);
