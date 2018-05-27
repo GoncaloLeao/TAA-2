@@ -10,7 +10,7 @@ import java.util.Random;
  * Implementation based on William Pugh paper: Skip Lists: A Probabilistic
  * Alternative to Balanced Trees
  * 
- * @author Matheus Rosa
+ * @author Gonçalo Leão & Matheus Rosa
  *
  * @param <K>
  */

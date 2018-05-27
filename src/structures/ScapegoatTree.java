@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
 
+/**
+ * @author Gonçalo Leão & Matheus Rosa
+ *
+ */
 public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	public class Node {
@@ -40,8 +44,8 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	private Node root;
 	private final double ALPHA;
-    private int size; //number of nodes in the tree
-    private int maxSize; //maximal value of size since the last time the tree was completely rebuilt. 
+	private int size; //number of nodes in the tree
+	private int maxSize; //maximal value of size since the last time the tree was completely rebuilt. 
 	
     public ScapegoatTree(double alpha) {
     	//Check if the value for alpha is not valid
@@ -159,7 +163,7 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     		n = n.getParent();
     		size = totalSize;
     	}
-    	return null;
+    	throw new RuntimeException("Found a null scapegoat node.");
     }
 
 	@Override
@@ -209,7 +213,7 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     		else {
     			Node largestLeftNode = getMax(node.getLeft());
     			node.setKey(largestLeftNode.getKey());
-    			
+    			this.size++; //increment to nufily the decrement from the call to remove in the next line (that always removes a leaf)
     			Node newChild = remove(node.getLeft(), largestLeftNode.getKey());
     			node.setLeft(newChild);
     			if(newChild != null) newChild.setParent(node);

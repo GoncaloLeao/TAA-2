@@ -5,6 +5,10 @@ package structures;
 
 import java.util.LinkedList;
 
+/**
+ * @author Gonçalo Leão & Matheus Rosa
+ *
+ */
 public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	public class Node {

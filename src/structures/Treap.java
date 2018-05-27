@@ -10,7 +10,7 @@ import java.util.Stack;
  * priority, where the inorder sequence of search keys is sorted and each node's
  * priority is smaller than the priority of its children
  * 
- * @author Matheus Rosa
+ * @author Gonçalo Leão & Matheus Rosa
  *
  */
 public class Treap<K extends Comparable<K>> implements DynamicSet<K> {
