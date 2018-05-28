@@ -41,6 +41,7 @@ public class Print2CSV {
 	 *            - size of test in each column of the matrix
 	 * @param toFile
 	 *            - to indicate if the print will be at standard or file output (false to standard output)
+	 * @throws IOException 
 	 */
 	public void data2CSVFormat(ArrayList<String> labels, ArrayList<ArrayList<Long>> data, int step, boolean toFile) {
 		

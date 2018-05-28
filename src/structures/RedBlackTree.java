@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * ensure the tree remains approximately balanced during insertions and
  * deletions.
  * 
- * @author Gonçalo Leão & Matheus Rosa
+ * @author Gonï¿½alo Leï¿½o & Matheus Rosa
  *
  */
 public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
@@ -504,7 +504,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 
 			Node w2 = x.getSibling();
 
-			if (w2 != null && w2.getLeft().getColor() == BLACK && w2.getRight().getColor() == BLACK) {
+			if (w2.getLeft().getColor() == BLACK && w2.getRight().getColor() == BLACK) {
 				w2.setColor(RED);
 				next = x.getParent();
 			} else {
@@ -532,7 +532,7 @@ public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {
 			}
 
 			Node w2 = x.getSibling();
-			if (w2 != null && w2.getRight().getColor() == BLACK && w2.getLeft().getColor() == BLACK) {
+			if (w2.getRight().getColor() == BLACK && w2.getLeft().getColor() == BLACK) {
 				w2.setColor(RED);
 				next = x.getParent();
 			} else {

@@ -15,9 +15,9 @@ import structures.*;
 public class TimeTests {	 
 	public final static boolean TO_FILE = true;
 	
-	public static int inputFormat = 0;
+	public static int inputFormat = 1;
 	public static int numberTests = 10;
-	public static int step = 1000;
+	public static int step = 5000;
 	public static int samples = 3;
 	public static String directoryName = "UniformInput";
 	
@@ -62,9 +62,9 @@ public class TimeTests {
 		AVLTree<Integer> avl = new AVLTree<>();
 		RedBlackTree<Integer> redBlack = new RedBlackTree<>();
 		SplayTree<Integer> splay = new SplayTree<>();
-		Treap<Integer> treap = new Treap<>();
-		//ScapegoatTree<Integer> scape5 = new ScapegoatTree<>(0.5);
+		ScapegoatTree<Integer> scape5 = new ScapegoatTree<>(0.5);
 		ScapegoatTree<Integer> scape95 = new ScapegoatTree<>(0.95);	
+		Treap<Integer> treap = new Treap<>();
 		SkipList<Integer> list = new SkipList<>();
 		
 		javaTreeSetResult = benchmark.timeTest(javaTreeSet, inputFormat);
@@ -73,7 +73,7 @@ public class TimeTests {
 		redBlackResult = benchmark.timeTest(redBlack, inputFormat);
 		splayResult = benchmark.timeTest(splay, inputFormat);
 		treapResult = benchmark.timeTest(treap, inputFormat);
-		//scapeResult5 = benchmark.timeTest(scape5, inputFormat);
+		scapeResult5 = benchmark.timeTest(scape5, inputFormat);
 		scapeResult95 = benchmark.timeTest(scape95, inputFormat);
 		listResult = benchmark.timeTest(list, inputFormat);
 	
@@ -110,9 +110,9 @@ public class TimeTests {
 		labels.add("AVLTree");
 		labels.add("RedBlackTree");
 		labels.add("SplayTree");
-		labels.add("Treap");
-		//labels.add("ScapegoatTree 0.5");
+		labels.add("ScapegoatTree 0.5");
 		labels.add("ScapegoatTree 0.95");
+		labels.add("Treap");
 		labels.add("SkipList");		
 		
 		Print2CSV export = new Print2CSV(dir, file+".csv");
@@ -122,9 +122,9 @@ public class TimeTests {
 		data.add(avlResult.get(op));
 		data.add(redBlackResult.get(op));
 		data.add(splayResult.get(op));
-		data.add(treapResult.get(op));
-		//data.add(scapeResult5.get(op));
+		data.add(scapeResult5.get(op));
 		data.add(scapeResult95.get(op));
+		data.add(treapResult.get(op));
 		data.add(listResult.get(op));
 		
 		export.data2CSVFormat(labels, data, step, TO_FILE);
