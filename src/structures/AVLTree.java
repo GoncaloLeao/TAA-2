@@ -3,9 +3,15 @@ package structures;
 import java.util.LinkedList;
 
 /**
+ * A self-balanced binary search tree where each subtree has at most one level of diference
+ * from  its sibling subtree. Modifications on the structure are made to keep this 
+ * property and this modifications are caled rotations, these rotations change the 
+ * relative position between some nodes. 
+ *
  * @author Gonçalo Leão & Matheus Rosa
  *
  */
+
 public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 	
 	public class Node {

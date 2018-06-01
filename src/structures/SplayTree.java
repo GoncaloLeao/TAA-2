@@ -6,6 +6,11 @@ package structures;
 import java.util.LinkedList;
 
 /**
+ * A self-adjusting binary search tree where after each operation, the refered node in 
+ * that operation is bring to the root of the tree. That operations of bring the node 
+ * to the root are called Zig-Zag and are based on simple rotations. This structure is
+ * amortized logarithmic. 
+ *
  * @author Gonçalo Leão & Matheus Rosa
  *
  */

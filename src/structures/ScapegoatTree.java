@@ -5,6 +5,12 @@ import java.util.LinkedList;
 import java.util.Stack;
 
 /**
+ * This structure is a self-balanced binary search tree that do not require extra space per 
+ * node. Instead, the scapegoat tree keeps a alpha parameter that is a balanced value for the
+ * tree. This alpha is at least 0.5 and at most 1, and it can be choosed according with 
+ * the balancing necessities. If the alpha is small, then the tree is highly balanced, 
+ * otherwise, the tree is less balanced.
+ *
  * @author Gonçalo Leão & Matheus Rosa
  *
  */

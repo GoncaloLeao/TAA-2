@@ -2,6 +2,14 @@ package structures;
 
 import java.util.LinkedList;
 
+/**
+ * A basic tree struture that stores the elements in nodes and each node has two children, 
+ * where the left child is small than the parent and the right child is greater that it.
+ *
+ * @author Gonçalo Leão & Matheus Rosa
+ *
+ */
+
 public class SimpleBST<K extends Comparable<K>> implements DynamicSet<K> {
 
 	public class Node {
