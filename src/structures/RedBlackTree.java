@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * ensure the tree remains approximately balanced during insertions and
  * deletions.
  * 
- * @author Gonï¿½alo Leï¿½o & Matheus Rosa
+ * @author Gonçalo Leão & Matheus Rosa
  *
  */
 public class RedBlackTree<K extends Comparable<K>> implements DynamicSet<K> {

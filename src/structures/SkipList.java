@@ -158,7 +158,10 @@ public class SkipList<K extends Comparable<K>> implements DynamicSet<K> {
 		return x.getKey();
 	}
 
-	//https://courses.e-ce.uth.gr/CE210/doku.php?id=skiplist
+	/**
+	 * Returns a string in the DOT language for the skip list.
+	 * This method was inspired by the following source code: https://courses.e-ce.uth.gr/CE210/doku.php?id=skiplist
+	 */
 	@Override
 	public String toDotString() {
 		StringBuilder stringBuilder = new StringBuilder();

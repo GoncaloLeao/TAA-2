@@ -39,6 +39,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ * Main class for the Graphical User Interface (GUI).
+ * 
+ * @author Gonçalo Leão & Matheus Rosa
+ *
+ */
 public class GUI {
 
 	private JFrame frmGUI;

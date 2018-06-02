@@ -277,16 +277,34 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
     	else return 1 + getSize(node.getLeft()) + getSize(node.getRight());
 	}
 	
+	/**
+	 * Computes the floor of the logarithm in base (1/alpha) of n.
+	 * 
+	 * @param n Argument for the logarithm.
+	 * @return Evaluation of this function as an integer.
+	 */
 	private int hAlpha(int n) {
 		return (int)Math.floor(-Math.log(n)/Math.log(this.ALPHA));
 	}
 	
+	/**
+	 * Rebuilds the whole subtree nested at the given node.
+	 * 
+	 * @param node Root of the subtree to rebuild.
+	 * @return Root of the rebuilt subtree.
+	 */
 	private Node rebuildTree(Node node) {
 		//Retrieve the subtree's list of nodes in order
 		ArrayList<Node> list = flatten(node);
 		return buildTree(list, 0, list.size() - 1);
 	}
 	
+	/**
+	 * Converts the subtree nested at a given node to an ordered list.
+	 * 
+	 * @param node Root of the subtree to traverse.
+	 * @return List that ordered according to the in-order traversal of the nodes.
+	 */
 	private ArrayList<Node> flatten(Node node) {
 		ArrayList<Node> list = new ArrayList<Node>();
 		if(node != null) {
@@ -309,6 +327,15 @@ public class ScapegoatTree<K extends Comparable<K>> implements DynamicSet<K> {
 		return list;
 	}
 	
+	/**
+	 * Builds a balanced binary search tree given an ordered list of its nodes according to the in-order traversal scheme.
+	 * This method follows a divide-and-conquer strategy.
+	 * 
+	 * @param list Ordered list of nodes.
+	 * @param start Index of the first node to consider in list.
+	 * @param end Index of the last node to consider in list.
+	 * @return Root of the tree that was built.
+	 */
 	private Node buildTree(ArrayList<Node> list, int start, int end) {
 		if(start <= end) {
 			int middle = (int)Math.ceil((start + end) / 2.0);

@@ -306,6 +306,12 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
 		return stringBuilder.toString();
 	}
 	
+    /**
+     * Left rotates a given node.
+     * 
+     * @param x Node to rotate.
+     * @return Node that will take the place of x in the tree (previously the right child of x).
+     */
 	private Node rotateLeft(Node x) {
         Node y = x.getRight();
         if(y == null) return x;
@@ -320,6 +326,12 @@ public class AVLTree<K extends Comparable<K>> implements DynamicSet<K> {
         return y;
     }
     
+	/**
+     * Right rotates a given node.
+     * 
+     * @param x Node to rotate.
+     * @return Node that will take the place of x in the tree (previously the left child of x).
+     */
 	private Node rotateRight(Node x) {
         Node y = x.getLeft();
         if(y == null) return x;

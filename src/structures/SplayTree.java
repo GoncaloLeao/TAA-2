@@ -1,6 +1,3 @@
-//Top-down splay tree: http://digital.cs.usu.edu/~allan/DS/Notes/Ch22.pdf
-//Codigo util: http://www.link.cs.cmu.edu/link/ftp-site/splaying/SplayTree.java
-
 package structures;
 
 import java.util.LinkedList;
@@ -9,7 +6,10 @@ import java.util.LinkedList;
  * A self-adjusting binary search tree where after each operation, the refered node in 
  * that operation is bring to the root of the tree. That operations of bring the node 
  * to the root are called Zig-Zag and are based on simple rotations. This structure is
- * amortized logarithmic. 
+ * amortized logarithmic.
+ * 
+ * Our implementation is based on one by Danny Sleator.
+ * Available in: http://www.link.cs.cmu.edu/link/ftp-site/splaying/SplayTree.java
  *
  * @author Gonçalo Leão & Matheus Rosa
  *
@@ -249,6 +249,11 @@ public class SplayTree<K extends Comparable<K>> implements DynamicSet<K> {
         return y;
     }
 	
+	/**
+	 * Moves a node to the root given its key using top-down splaying.
+	 * 
+	 * @param key Key of the node to splay.
+	 */
 	private void splay(K key) {
 		Node header = new Node(null); //tree whose left and right subtrees will then be used for the reassembling
 		Node l = header; //maximum node on the left side of header

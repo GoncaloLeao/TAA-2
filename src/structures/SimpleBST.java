@@ -6,7 +6,7 @@ import java.util.LinkedList;
  * A basic tree struture that stores the elements in nodes and each node has two children, 
  * where the left child is small than the parent and the right child is greater that it.
  *
- * @author Gon√ßalo Le√£o & Matheus Rosa
+ * @author GonÁalo Le„o & Matheus Rosa
  *
  */
 
